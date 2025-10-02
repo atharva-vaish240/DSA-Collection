@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Ask a Question
+    url: https://github.com/admirerr/DSA-Collection/discussions
+    about: Ask questions and discuss with our community
+  - name: 🐛 Security Issue
+    url: https://github.com/admirerr/DSA-Collection/security/advisories/new
+    about: Report security vulnerabilities privately
+  - name: 📞 Contact Maintainers
+    url: https://github.com/kartikey2991
+    about: Contact maintainer @kartikey2991 for urgent matters

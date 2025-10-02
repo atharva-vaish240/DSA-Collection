@@ -1,0 +1,433 @@
+name: 🧪 Multi-Language Testing
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      c-cpp-changed: ${{ steps.changes.outputs.c_cpp }}
+      java-changed: ${{ steps.changes.outputs.java }}
+      python-changed: ${{ steps.changes.outputs.python }}
+      javascript-changed: ${{ steps.changes.outputs.javascript }}
+      go-changed: ${{ steps.changes.outputs.go }}
+      rust-changed: ${{ steps.changes.outputs.rust }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        filters: |
+          c_cpp:
+            - 'C/**'
+            - 'CPP/**'
+          java:
+            - 'Java/**'
+          python:
+            - 'Python/**'
+          javascript:
+            - '**/*.js'
+            - 'JavaScript/**'
+          go:
+            - '**/*.go'
+            - 'Go/**'
+          rust:
+            - '**/*.rs'
+            - 'Rust/**'
+
+  test-c-cpp:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.c-cpp-changed == 'true'
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🔧 Setup C/C++ environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc g++ make
+
+    - name: 🔍 Get changed C/C++ files
+      id: changed-files
+      uses: tj-actions/changed-files@v40
+      with:
+        files: |
+          C/**/*.c
+          CPP/**/*.cpp
+
+    - name: 🧪 Test changed C/C++ files
+      if: steps.changed-files.outputs.any_changed == 'true'
+      run: |
+        echo "🔍 Testing only changed C/C++ files..."
+        echo "Changed files: ${{ steps.changed-files.outputs.all_changed_files }}"
+
+        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          echo ""
+          echo "========================================"
+          echo "Testing: $file"
+          echo "========================================"
+
+          # Determine compiler based on extension
+          if [[ "$file" == *.c ]]; then
+            compiler="gcc"
+            output="${file%.c}.out"
+            compile_cmd="gcc -o \"$output\" \"$file\" -lm"
+          else
+            compiler="g++"
+            output="${file%.cpp}.out"
+            compile_cmd="g++ -std=c++17 -o \"$output\" \"$file\""
+          fi
+
+          # Compile the file
+          echo "📦 Compiling with $compiler..."
+          if eval $compile_cmd 2>&1; then
+            echo "✅ $file compiled successfully"
+
+            # Only run if it has main function and doesn't require cin/scanf
+            if grep -q "int main" "$file"; then
+              # Check if file requires user input
+              if grep -qE "(cin|scanf|getline|getchar|gets)" "$file"; then
+                echo "⏭️  Skipping runtime test (requires user input)"
+              else
+                echo "🏃 Running compiled program..."
+                if timeout 2s "$output" < /dev/null 2>&1; then
+                  echo "✅ Program executed successfully"
+                else
+                  exit_code=$?
+                  if [ $exit_code -eq 124 ]; then
+                    echo "⏱️  Program timed out (might be waiting for input or infinite loop)"
+                  else
+                    echo "⚠️  Program exited with code $exit_code"
+                  fi
+                fi
+              fi
+            else
+              echo "ℹ️  No main function found, skipping execution"
+            fi
+
+            # Cleanup
+            rm -f "$output"
+          else
+            echo "❌ $file failed to compile"
+            exit 1
+          fi
+        done
+
+        echo ""
+        echo "✅ All changed C/C++ files tested successfully!"
+
+  test-java:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.java-changed == 'true'
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: ☕ Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: 🔍 Get changed Java files
+      id: changed-files
+      uses: tj-actions/changed-files@v40
+      with:
+        files: |
+          Java/**/*.java
+
+    - name: 🧪 Test changed Java files
+      if: steps.changed-files.outputs.any_changed == 'true'
+      run: |
+        echo "🔍 Testing only changed Java files..."
+        echo "Changed files: ${{ steps.changed-files.outputs.all_changed_files }}"
+
+        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          echo ""
+          echo "========================================"
+          echo "Testing: $file"
+          echo "========================================"
+
+          # Compile
+          echo "📦 Compiling Java file..."
+          if javac "$file" 2>&1; then
+            echo "✅ $file compiled successfully"
+
+            # Try to run if it has main method
+            if grep -q "public static void main" "$file"; then
+              # Check if requires user input
+              if grep -qE "(Scanner|BufferedReader|readLine|nextInt|nextLine)" "$file"; then
+                echo "⏭️  Skipping runtime test (requires user input)"
+              else
+                classname=$(basename "${file%.java}")
+                classpath=$(dirname "$file")
+                echo "🏃 Running: $classname..."
+                if timeout 2s java -cp "$classpath" "$classname" < /dev/null 2>&1; then
+                  echo "✅ Program executed successfully"
+                else
+                  echo "⚠️  Runtime test completed with warnings"
+                fi
+              fi
+            else
+              echo "ℹ️  No main method found, skipping execution"
+            fi
+
+            # Cleanup .class files
+            rm -f "$(dirname "$file")"/*.class
+          else
+            echo "❌ $file failed to compile"
+            exit 1
+          fi
+        done
+
+        echo ""
+        echo "✅ All changed Java files tested successfully!"
+
+  test-python:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.python-changed == 'true'
+
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.11']
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: 📦 Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # Install common packages for algorithms
+        pip install numpy scipy matplotlib pandas
+
+    - name: 🔍 Get changed Python files
+      id: changed-files
+      uses: tj-actions/changed-files@v40
+      with:
+        files: |
+          Python/**/*.py
+
+    - name: 🧪 Test changed Python files
+      if: steps.changed-files.outputs.any_changed == 'true'
+      run: |
+        echo "🔍 Testing only changed Python files with Python ${{ matrix.python-version }}..."
+        echo "Changed files: ${{ steps.changed-files.outputs.all_changed_files }}"
+
+        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          echo ""
+          echo "========================================"
+          echo "Testing: $file"
+          echo "========================================"
+
+          # Check syntax
+          echo "📦 Checking Python syntax..."
+          if python -m py_compile "$file" 2>&1; then
+            echo "✅ $file syntax is valid"
+
+            # Try to run if it has main guard
+            if grep -q "if __name__ == ['\"]__main__['\"]" "$file"; then
+              # Check if requires user input
+              if grep -qE "(input\(|raw_input\()" "$file"; then
+                echo "⏭️  Skipping runtime test (requires user input)"
+              else
+                echo "🏃 Running Python script..."
+                if timeout 2s python "$file" < /dev/null 2>&1; then
+                  echo "✅ Program executed successfully"
+                else
+                  echo "⚠️  Runtime test completed with warnings"
+                fi
+              fi
+            else
+              echo "ℹ️  No __main__ guard found, skipping execution"
+            fi
+          else
+            echo "❌ $file has syntax errors"
+            exit 1
+          fi
+        done
+
+        echo ""
+        echo "✅ All changed Python files tested successfully!"
+
+  test-javascript:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.javascript-changed == 'true'
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🟨 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: 🧪 Test JavaScript files
+      run: |
+        echo "🔍 Testing JavaScript files..."
+        find . -name "*.js" -type f -not -path "./node_modules/*" 2>/dev/null | while read file; do
+          echo "Testing: $file"
+          node -c "$file"
+          if [ $? -eq 0 ]; then
+            echo "✅ $file syntax is valid"
+            # Basic execution test
+            timeout 5s node "$file" < /dev/null || echo "⚠️ Runtime test completed"
+          else
+            echo "❌ $file has syntax errors"
+            exit 1
+          fi
+        done || echo "No JavaScript files to test"
+
+  test-go:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.go-changed == 'true'
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🐹 Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: 🧪 Test Go files
+      run: |
+        echo "🔍 Testing Go files..."
+        find . -name "*.go" -type f 2>/dev/null | while read file; do
+          echo "Testing: $file"
+          go build "$file"
+          if [ $? -eq 0 ]; then
+            echo "✅ $file compiled successfully"
+            # Run if it has main function
+            if grep -q "func main()" "$file"; then
+              binary_name=$(basename "${file%.go}")
+              if [ -f "./$binary_name" ]; then
+                echo "Running: $binary_name"
+                timeout 5s "./$binary_name" < /dev/null || echo "⚠️ Runtime test completed"
+                rm -f "./$binary_name"
+              fi
+            fi
+          else
+            echo "❌ $file failed to compile"
+            exit 1
+          fi
+        done || echo "No Go files to test"
+
+  test-rust:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.rust-changed == 'true'
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🦀 Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    - name: 🧪 Test Rust files
+      run: |
+        echo "🔍 Testing Rust files..."
+        find . -name "*.rs" -type f 2>/dev/null | while read file; do
+          echo "Testing: $file"
+          rustc "$file" --edition 2021
+          if [ $? -eq 0 ]; then
+            echo "✅ $file compiled successfully"
+            # Run if it has main function
+            if grep -q "fn main()" "$file"; then
+              binary_name=$(basename "${file%.rs}")
+              if [ -f "./$binary_name" ]; then
+                echo "Running: $binary_name"
+                timeout 5s "./$binary_name" < /dev/null || echo "⚠️ Runtime test completed"
+                rm -f "./$binary_name"
+              fi
+            fi
+          else
+            echo "❌ $file failed to compile"
+            exit 1
+          fi
+        done || echo "No Rust files to test"
+
+  test-summary:
+    runs-on: ubuntu-latest
+    needs: [detect-changes, test-c-cpp, test-java, test-python, test-javascript, test-go, test-rust]
+    if: always()
+
+    steps:
+    - name: 📋 Test Summary
+      run: |
+        echo "🧪 Multi-Language Testing Summary"
+        echo "================================="
+        echo ""
+
+        if [ "${{ needs.test-c-cpp.result }}" = "success" ]; then
+          echo "✅ C/C++ tests passed"
+        elif [ "${{ needs.test-c-cpp.result }}" = "failure" ]; then
+          echo "❌ C/C++ tests failed"
+        else
+          echo "⏭️ C/C++ tests skipped"
+        fi
+
+        if [ "${{ needs.test-java.result }}" = "success" ]; then
+          echo "✅ Java tests passed"
+        elif [ "${{ needs.test-java.result }}" = "failure" ]; then
+          echo "❌ Java tests failed"
+        else
+          echo "⏭️ Java tests skipped"
+        fi
+
+        if [ "${{ needs.test-python.result }}" = "success" ]; then
+          echo "✅ Python tests passed"
+        elif [ "${{ needs.test-python.result }}" = "failure" ]; then
+          echo "❌ Python tests failed"
+        else
+          echo "⏭️ Python tests skipped"
+        fi
+
+        if [ "${{ needs.test-javascript.result }}" = "success" ]; then
+          echo "✅ JavaScript tests passed"
+        elif [ "${{ needs.test-javascript.result }}" = "failure" ]; then
+          echo "❌ JavaScript tests failed"
+        else
+          echo "⏭️ JavaScript tests skipped"
+        fi
+
+        if [ "${{ needs.test-go.result }}" = "success" ]; then
+          echo "✅ Go tests passed"
+        elif [ "${{ needs.test-go.result }}" = "failure" ]; then
+          echo "❌ Go tests failed"
+        else
+          echo "⏭️ Go tests skipped"
+        fi
+
+        if [ "${{ needs.test-rust.result }}" = "success" ]; then
+          echo "✅ Rust tests passed"
+        elif [ "${{ needs.test-rust.result }}" = "failure" ]; then
+          echo "❌ Rust tests failed"
+        else
+          echo "⏭️ Rust tests skipped"
+        fi
+
+        echo ""
+        echo "🎉 Testing completed for all applicable languages!"

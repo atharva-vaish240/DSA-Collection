@@ -1,0 +1,185 @@
+name: 📋 Repository Structure Validation
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  validate-structure:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🔍 Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v40
+
+    - name: 📁 Validate directory structure
+      run: |
+        echo "📁 Validating repository structure..."
+        structure_issues=()
+
+        # Check for language directories (C, CPP, Java, Python, etc.)
+        for lang_dir in */; do
+          lang_name="${lang_dir%/}"
+          # Ignore hidden directories and non-language directories
+          if [[ "$lang_name" =~ ^(\.github|\.git|node_modules)$ ]]; then
+            continue
+          fi
+
+          if [ -d "$lang_name" ]; then
+            echo "🔍 Checking language directory: $lang_name"
+
+            # Check for README.md in language directory
+            if [ ! -f "$lang_name/README.md" ]; then
+              structure_issues+=("Missing README.md in $lang_name/")
+            fi
+
+            # Check for topic subdirectories
+            topic_dirs=$(find "$lang_name" -mindepth 1 -maxdepth 1 -type d)
+            if [ -z "$topic_dirs" ]; then
+              structure_issues+=("Language directory '$lang_name' is empty or contains no topic subdirectories.")
+            else
+              echo "Found topic directories in $lang_name: $(basename -a $topic_dirs | tr '\n' ' ')"
+            fi
+          fi
+        done
+
+        # Report issues
+        if [ ${#structure_issues[@]} -gt 0 ]; then
+          echo "⚠️ Structure issues found:"
+          printf '%s\n' "${structure_issues[@]}"
+          # exit 1 # Optionally fail the build
+        else
+          echo "✅ Language directory structure looks good!"
+        fi
+
+    - name: 🏗️ Validate algorithm organization
+      run: |
+        echo "🏗️ Validating algorithm organization..."
+
+        # Check for algorithms in correct directories
+        misplaced_algorithms=()
+
+        # Search for common algorithm patterns
+        search_patterns=(
+          "search:searching"
+          "sort:sorting"
+          "graph:graph_algorithms"
+          "string:string_algorithms"
+          "tree:trees"
+          "stack:stacks"
+          "queue:queues"
+          "heap:heaps"
+          "link:linked_lists"
+          "dynamic:dynamic_programming"
+        )
+
+        for pattern in "${search_patterns[@]}"; do
+          keyword="${pattern%%:*}"
+          expected_dir="${pattern##*:}"
+
+          # Find files containing the keyword
+          files_with_keyword=($(find . -name "*.c" -o -name "*.cpp" -o -name "*.java" -o -name "*.py" -o -name "*.js" -o -name "*.go" -o -name "*.rs" | xargs grep -l -i "$keyword" 2>/dev/null || true))
+
+          for file in "${files_with_keyword[@]}"; do
+            # Check if file is in expected directory
+            if [[ "$file" != *"/$expected_dir/"* ]] && [[ "$file" != *"$expected_dir"* ]]; then
+              # Skip if it's just a comment or documentation
+              if grep -q -i "$keyword" "$file" && ! grep -q -E "//.*$keyword|#.*$keyword|/\*.*$keyword" "$file"; then
+                misplaced_algorithms+=("$file: Contains '$keyword' but not in $expected_dir directory")
+              fi
+            fi
+          done
+        done
+
+        if [ ${#misplaced_algorithms[@]} -gt 0 ]; then
+          echo "💡 Algorithm organization suggestions:"
+          printf '%s\n' "${misplaced_algorithms[@]}"
+        else
+          echo "✅ Algorithm organization looks good!"
+        fi
+
+    - name: 📝 Check documentation completeness
+      run: |
+        echo "📝 Checking documentation completeness..."
+
+        missing_docs=()
+
+        # Check main repository documentation
+        required_docs=("README.md" "CONTRIBUTING.md" "HALL_OF_FAME.md")
+        for doc in "${required_docs[@]}"; do
+          if [ ! -f "$doc" ]; then
+            missing_docs+=("Missing main documentation: $doc")
+          else
+            echo "✅ Found $doc"
+          fi
+        done
+
+        # Check language-specific documentation
+        for lang_dir in */; do
+          lang_name="${lang_dir%/}"
+
+          # Skip hidden directories and non-language directories
+          if [[ "$lang_name" =~ ^\. ]] || [[ "$lang_name" =~ ^(node_modules|\.git|\.github)$ ]]; then
+            continue
+          fi
+
+          # Check for language README
+          if [ -d "$lang_dir" ] && [ ! -f "$lang_dir/README.md" ]; then
+            # Only report if directory contains code files
+            code_files=($(find "$lang_dir" -name "*.c" -o -name "*.cpp" -o -name "*.java" -o -name "*.py" -o -name "*.js" -o -name "*.go" -o -name "*.rs" 2>/dev/null))
+            if [ ${#code_files[@]} -gt 0 ]; then
+              missing_docs+=("Language directory $lang_dir is missing README.md")
+            fi
+          elif [ -f "$lang_dir/README.md" ]; then
+            echo "✅ Found $lang_dir/README.md"
+          fi
+        done
+
+        if [ ${#missing_docs[@]} -gt 0 ]; then
+          echo "📝 Documentation suggestions:"
+          printf '%s\n' "${missing_docs[@]}"
+        else
+          echo "✅ Documentation is complete!"
+        fi
+
+    - name: 🎯 Generate structure report
+      run: |
+        echo "🎯 Repository Structure Report"
+        echo "=============================="
+        echo ""
+
+        echo "📊 Language Distribution:"
+        for dir in */; do
+          if [[ -d "$dir" ]] && [[ ! "$dir" =~ ^\. ]] && [[ ! "$dir" =~ ^(node_modules|\.git|\.github)$ ]]; then
+            lang_name="${dir%/}"
+            file_count=$(find "$dir" -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.java" -o -name "*.py" -o -name "*.js" -o -name "*.go" -o -name "*.rs" -o -name "*.kt" -o -name "*.swift" -o -name "*.php" -o -name "*.rb" -o -name "*.cs" -o -name "*.dart" -o -name "*.scala" \) 2>/dev/null | wc -l)
+            echo "  📁 $lang_name: $file_count files"
+          fi
+        done
+
+        echo ""
+        echo "🏗️ Algorithm Categories:"
+        categories=("searching" "sorting" "graph_algorithms" "string_algorithms")
+        for category in "${categories[@]}"; do
+          count=$(find . -path "*/$category/*" -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.java" -o -name "*.py" -o -name "*.js" -o -name "*.go" -o -name "*.rs" \) 2>/dev/null | wc -l)
+          echo "  🔍 $category: $count implementations"
+        done
+
+        echo ""
+        echo "🏗️ Data Structure Categories:"
+        ds_categories=("trees" "stacks" "queues" "graphs" "heaps" "linked_lists")
+        for category in "${ds_categories[@]}"; do
+          count=$(find . -path "*/$category/*" -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.java" -o -name "*.py" -o -name "*.js" -o -name "*.go" -o -name "*.rs" \) 2>/dev/null | wc -l)
+          echo "  🏗️ $category: $count implementations"
+        done
+
+        echo ""
+        echo "✅ Structure validation completed!"
