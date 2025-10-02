@@ -41,7 +41,7 @@ jobs:
           fi
           DECODED=$(echo "$c" | base64 -d)
           IFS=',' read -r login avatar_url contributions <<< "$DECODED"
-          echo "    <img src=\"${avatar_url}&s=50\" width=\"50\" height=\"50\" alt=\"${login}\"/>" >> contributors.html
+          echo "    <img src=\"${avatar_url}&s=50\" width=\"50\" height=\"50\" alt=\"$\{login}\"/>" >> contributors.html
         done
 
         {
@@ -91,7 +91,7 @@ jobs:
 
         # Update README stats
         if [ -f "README.md" ]; then
-          sed -i "s/💻 \*\*[0-9]*+ Languages\*\*/💻 **${supported_languages}+ Languages**/g" README.md
+          sed -i "s/💻 \*\*[0-9]*+ Languages\*\* /💻 **${supported_languages}+ Languages**/g" README.md
         fi
 
     - name: 📅 Update last modified date
@@ -100,7 +100,7 @@ jobs:
         current_date=$(date +"%B %Y")
 
         if [ -f "HALL_OF_FAME.md" ]; then
-          sed -i "s/\*Last updated: .* [0-9]*\*/\*Last updated: $current_date\*/g" HALL_OF_FAME.md
+          sed -i "s/\*Last updated: .* [0-9]*\* /\*Last updated: $current_date\*/g" HALL_OF_FAME.md
           echo "✅ Updated last modified date in HALL_OF_FAME.md"
         fi
 
