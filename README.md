@@ -26,15 +26,19 @@ This repository serves as:
 
 📢 **Register [here](https://hacktoberfest.com/) for Hacktoberfest and make six pull requests (PRs) between October 1st-31st for exclusive T-shirt + Tree contribution! 🔥🌱**
 
-## 👥 Repository Maintainer
+## 👥 Repository Maintainers
 
 <div align="center">
 
-**🛠️ Admin & Maintainer**
+**🛠️ Admin**
 
 [![GitHub](https://img.shields.io/badge/GitHub-@admirerr-181717?style=for-the-badge&logo=github)](https://github.com/admirerr/)
 
-*Feel free to reach out for any questions, contributions, or support!*
+**🛠️ Maintainer**
+
+[![GitHub](https://img.shields.io/badge/GitHub-@kartikey2991-181717?style=for-the-badge&logo=github)](https://github.com/kartikey2991/)
+
+*Feel free to reach out to any of us for questions, contributions, or support!*
 
 </div>
 
