@@ -38,7 +38,7 @@ jobs:
       run: |
         USER_INFO=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           "https://api.github.com/users/${{ steps.get_contributor.outputs.contributor }}")
-        echo "avatar_url=$(echo \"$USER_INFO\" | jq -r '.avatar_url')" >> $GITHUB_OUTPUT
+        echo "avatar_url=$(echo "$USER_INFO" | jq -r '.avatar_url')" >> $GITHUB_OUTPUT
 
     - name: ✨ Update Contributor Profile
       run: |
@@ -79,15 +79,15 @@ jobs:
 
     - name: 📈 Update Hall of Fame Statistics
       run: |
-        sed -i "s/| 🎯 **Total Implementations** | [0-9]* |/| 🎯 **Total Implementations** | ${{ steps.repo_stats.outputs.total_implementations }} |/g" HALL_OF_FAME.md
-        sed -i "s/### Python\n- Implementations: [0-9]*/### Python\n- Implementations: ${{ steps.repo_stats.outputs.python_implementations }}/g" HALL_OF_FAME.md
-        sed -i "s/### C\+\+\n- Implementations: [0-9]*/### C++\n- Implementations: ${{ steps.repo_stats.outputs.cpp_implementations }}/g" HALL_OF_FAME.md
-        sed -i "s/### Java\n- Implementations: [0-9]*/### Java\n- Implementations: ${{ steps.repo_stats.outputs.java_implementations }}/g" HALL_OF_FAME.md
+        sed -i "s#| 🎯 **Total Implementations** | [0-9]* |#| 🎯 **Total Implementations** | ${{ steps.repo_stats.outputs.total_implementations }} |#g" HALL_OF_FAME.md
+        sed -i "s#### Python\n- Implementations: [0-9]*#### Python\n- Implementations: ${{ steps.repo_stats.outputs.python_implementations }}#g" HALL_OF_FAME.md
+        sed -i "s#### C\+\+\n- Implementations: [0-9]*#### C++\n- Implementations: ${{ steps.repo_stats.outputs.cpp_implementations }}#g" HALL_OF_FAME.md
+        sed -i "s#### Java\n- Implementations: [0-9]*#### Java\n- Implementations: ${{ steps.repo_stats.outputs.java_implementations }}#g" HALL_OF_FAME.md
 
     - name: 📅 Update Last Modified Date
       run: |
         current_date=$(date +"%B %Y")
-        sed -i "s/\*Last updated: .* [0-9]*\*/\*Last updated: $current_date\*/g" HALL_OF_FAME.md
+        sed -i "s#\*Last updated: .* [0-9]*\*#\*Last updated: $current_date\*#g" HALL_OF_FAME.md
 
     - name: 💾 Commit and Push Changes
       run: |
