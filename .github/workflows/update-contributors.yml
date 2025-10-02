@@ -27,6 +27,7 @@ jobs:
 
     - name: 🏆 Update contributors list
       run: |
+        set -x
         CONTRIBUTORS=$(curl -s "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100" | jq -r '.[] | select(.type != "Bot") | @base64 "\(.login), \(.avatar_url), \(.contributions)"')
         
         {
