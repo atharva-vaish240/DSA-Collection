@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class dijkstra_algorithm {
+public class DijkstraAlgorithm {
     static class Node implements Comparable<Node> {
         int vertex;
         int distance;
