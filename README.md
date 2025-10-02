@@ -1,6 +1,8 @@
 # DSA Collection
 
-A community-driven repository of Dat## 📂 Repository Structure
+A community-driven repository of Data Structures and Algorithms solutions in multiple programming languages.
+
+## 📂 Repository Structure
 
 The repository follows a simple two-level structure:
 
