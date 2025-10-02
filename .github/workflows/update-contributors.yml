@@ -7,7 +7,7 @@ on:
       - main
 
 permissions:
-  contents: write   # <-- this is critical for push to work
+  contents: write
 
 jobs:
   update:
@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}   # built-in token, no setup required
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update Contributors in HALL_OF_FAME.md and README.md
         run: |
@@ -24,10 +24,13 @@ jobs:
             | jq -r '.[] | select(.type != "Bot") | [.login, .avatar_url, .html_url, .contributions] | @tsv' \
             | sort -k4,4nr)
 
-          TABLE=$(echo "$CONTRIBUTORS" | awk -F'\t' '{printf "| ![%s](%s) [%s](%s) | %s |\n", $1, $2, $1, $3, $4}')
+          # Build Hall of Fame table with small avatars and handle below
+          TABLE=$(echo "$CONTRIBUTORS" | awk -F'\t' '{printf "| <div align=\"center\"><img src=\"%s\" width=\"50\" height=\"50\"/><br>[%s](%s)</div> | %s |\n", $2, $1, $3, $4}')
+
+          # Build avatars row for README (small images)
           AVATARS=$(echo "$CONTRIBUTORS" | awk -F'\t' '{printf "[<img src=\"%s\" width=\"50\" height=\"50\" alt=\"%s\"/>](%s) ", $2, $1, $3}')
 
-          # Update Hall of Fame
+          # ---- Update Hall of Fame ----
           awk -v table="$TABLE" '
             /Contributor \| Contributions/ {
               print;
@@ -39,7 +42,7 @@ jobs:
             {print}
           ' HALL_OF_FAME.md > temp && mv temp HALL_OF_FAME.md
 
-          # Update README
+          # ---- Update README ----
           awk -v avatars="$AVATARS" '
             /<!-- CONTRIBUTORS START -->/ {
               print;
