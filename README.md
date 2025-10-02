@@ -28,7 +28,7 @@ Java/
     └── Factorial.java
 ```
 
-### � Directory Naming
+### 📌 Directory Naming
 - Language directories: Use any clear, standard name (e.g., Python, CPP, JavaScript, Rust)
 - Topic directories: Use descriptive names that reflect the content (e.g., trees, sorting, graphs, strings)
 - Feel free to create new topic directories as needed!tructures and Algorithms (DSA) solutions in multiple programming languages.  
@@ -36,7 +36,7 @@ If you're learning DSA or want to practice contributing to open source, this rep
 
 ---
 
-## � Supported Languages
+## 📌 Supported Languages
 
 We welcome contributions in any programming language! Currently implemented solutions in:
 - Python
@@ -57,7 +57,7 @@ And we're excited to accept solutions in:
 
 ---
 
-## �📌 Contribution Guide
+## 📌 Contribution Guide
 
 1. **Star** this repository (to support the project)
 2. **Fork** this repository
@@ -84,13 +84,6 @@ And we're excited to accept solutions in:
 
 ---
 
-
-## 📂 Repository Structure
-
-<img width="259" height="390" alt="Screenshot 2025-10-02 at 7 20 10 AM" src="https://github.com/user-attachments/assets/254433b3-c5d3-488a-b65c-ccfa515de10b" />
-
-
----
 
 ## ⭐ Support
 
