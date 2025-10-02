@@ -17,17 +17,19 @@ jobs:
   update-contributors:
     runs-on: ubuntu-latest
     # Run on push to main, manual trigger, or when PR is merged
+    # But skip if the commit message contains [skip ci] or is from the bot itself
     if: |
-      github.event_name == 'push' || 
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+      (github.event_name == 'push' || 
+       github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) &&
+      !contains(github.event.head_commit.message, '[skip ci]') &&
+      !contains(github.event.head_commit.message, 'Auto-update contributor')
 
     steps:
     - name: 📥 Checkout code
       uses: actions/checkout@v4
       with:
         ref: main
-        token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
         fetch-depth: 0
 
     - name: 🏆 Update contributors list
@@ -45,8 +47,7 @@ jobs:
           echo "</div>"
         } > contributors.html
 
-        echo "📄 Contributors HTML generated:"
-        cat contributors.html
+        echo "📄 Contributors HTML generated"
         echo ""
 
         # Verify README.md exists
@@ -72,35 +73,18 @@ jobs:
         echo "✅ Both tags found in README.md"
         echo "🔄 Updating README.md with contributors..."
 
-        # Update README.md with better error handling
+        # Update README.md
         python3 << 'EOF'
         import re
         import sys
 
         try:
-            # Read README
-            print("📖 Reading README.md...")
             with open('README.md', 'r', encoding='utf-8') as f:
                 text = f.read()
-            print(f"✅ README.md read successfully ({len(text)} characters)")
             
-            # Read contributors HTML
-            print("📖 Reading contributors.html...")
             with open('contributors.html', 'r', encoding='utf-8') as c:
                 contributors_html = c.read().strip()
-            print(f"✅ Contributors HTML read successfully ({len(contributors_html)} characters)")
             
-            # Check if tags exist
-            if '<!-- CONTRIBUTORS_LIST -->' not in text:
-                print("❌ ERROR: Start tag not found in README.md")
-                sys.exit(1)
-            
-            if '<!-- CONTRIBUTORS_LIST_END -->' not in text:
-                print("❌ ERROR: End tag not found in README.md")
-                sys.exit(1)
-            
-            # Replace everything between the tags
-            print("🔄 Replacing content between tags...")
             new_text = re.sub(
                 r'<!-- CONTRIBUTORS_LIST -->.*?<!-- CONTRIBUTORS_LIST_END -->',
                 f'<!-- CONTRIBUTORS_LIST -->\n{contributors_html}\n<!-- CONTRIBUTORS_LIST_END -->',
@@ -108,26 +92,16 @@ jobs:
                 flags=re.DOTALL
             )
             
-            # Verify replacement occurred
-            if new_text == text:
-                print("⚠️  WARNING: No changes detected after replacement")
-            else:
-                print(f"✅ Content replaced successfully")
-            
-            # Write back to README
-            print("💾 Writing updated README.md...")
             with open('README.md', 'w', encoding='utf-8') as f:
                 f.write(new_text)
+            
             print("✅ README.md updated successfully!")
             
         except Exception as e:
             print(f"❌ ERROR: {str(e)}")
-            import traceback
-            traceback.print_exc()
             sys.exit(1)
         EOF
 
-        echo ""
         echo "✅ Contributors list update completed!"
 
     - name: 📈 Update language statistics
@@ -147,10 +121,7 @@ jobs:
         echo "Python: $python_files files"
         echo "Total: $total_implementations implementations"
 
-        # Count supported languages
-        supported_languages=3 # Base languages: C++, Java, Python
-
-        echo "Supported languages: $supported_languages"
+        supported_languages=3
 
         # Update README stats
         if [ -f "README.md" ]; then
@@ -170,81 +141,55 @@ jobs:
     - name: 🔍 Check for changes
       id: changes
       run: |
-        echo "🔍 Checking for changes in tracked files..."
-        echo ""
-        
-        # Show git status
-        echo "📊 Git Status:"
-        git status --short
-        echo ""
-        
-        # Show detailed diff
         if ! git diff --quiet; then
-          echo "📝 Changes detected in:"
-          git diff --name-only
-          echo ""
-          echo "📋 Detailed changes:"
-          git diff --stat
-          echo ""
           echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "📝 Changes detected"
         else
-          echo "ℹ️  No changes to commit"
           echo "has_changes=false" >> $GITHUB_OUTPUT
+          echo "ℹ️  No changes needed"
         fi
 
-    - name: 💾 Commit and Push to Main
+    - name: 💾 Create Pull Request
       if: steps.changes.outputs.has_changes == 'true'
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "🏆 Auto-update contributor statistics"
+        committer: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+        author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+        branch: contributors-auto-update
+        delete-branch: true
+        title: "🏆 Update Contributor Statistics"
+        body: |
+          ## 🤖 Automated Contributor Update
+          
+          This PR automatically updates the contributors list and statistics.
+          
+          ### 📋 What's Updated:
+          - 👥 Contributors avatars in README.md
+          - 📊 Language statistics
+          - 📅 Last modified date
+          
+          ### ℹ️ Instructions:
+          **Please review and merge this PR** to keep the contributors list up-to-date.
+          
+          ---
+          <sub>🤖 This is an automated PR created by GitHub Actions</sub>
+        labels: |
+          documentation
+          automated
+
+    - name: 📋 Summary
       run: |
-        echo "⚙️  Configuring git..."
-        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-
-        echo "📦 Adding changed files..."
-        git add README.md HALL_OF_FAME.md
-
-        echo "💬 Creating commit..."
-        git commit -m "🏆 Auto-update contributor statistics [skip ci]"
-
-        echo "🚀 Pushing to main..."
-        if git push origin main; then
-          echo "✅ Successfully pushed to main!"
+        echo "## 🏆 Contributors Update" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ steps.changes.outputs.has_changes }}" == "true" ]; then
+          echo "✅ **Status**: Pull request created successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📝 **Action Required**: Please review and merge the PR to apply updates." >> $GITHUB_STEP_SUMMARY
         else
-          echo "❌ Failed to push to main"
-          echo ""
-          echo "⚠️  If you're seeing branch protection errors, you need to:"
-          echo "1. Create a Personal Access Token (PAT) with 'repo' scope"
-          echo "2. Add it as a repository secret named 'PAT_TOKEN'"
-          echo "3. The workflow will automatically use it to bypass branch protection"
-          exit 1
+          echo "ℹ️ **Status**: No changes needed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✨ Contributors list is already up-to-date!" >> $GITHUB_STEP_SUMMARY
         fi
-
-    - name: 📋 Generate summary (with changes)
-      if: steps.changes.outputs.has_changes == 'true'
-      run: |
-        echo "🏆 Contributors Update Summary"
-        echo "=============================="
-        echo ""
-        echo "✅ Successfully updated contributor statistics!"
-        echo ""
-        echo "📊 Updated files:"
-        echo "  - README.md (contributor list)"
-        if [ -f "HALL_OF_FAME.md" ]; then
-          echo "  - HALL_OF_FAME.md (last modified date)"
-        fi
-        echo ""
-        if [ "${{ github.event_name }}" == "pull_request" ]; then
-          echo "📅 Triggered by: PR #${{ github.event.pull_request.number }}"
-          echo "👤 New contributor: @${{ github.event.pull_request.user.login }}"
-        else
-          echo "📅 Triggered by: ${{ github.event_name }}"
-        fi
-        echo ""
-        echo "🎉 Changes pushed directly to main branch!"
-
-    - name: 📋 Generate summary (no changes)
-      if: steps.changes.outputs.has_changes == 'false'
-      run: |
-        echo "🏆 Contributors Update Summary"
-        echo "=============================="
-        echo ""
-        echo "ℹ️  No changes needed - contributors list is already up to date"
