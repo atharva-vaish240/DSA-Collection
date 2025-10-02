@@ -93,7 +93,7 @@ If you find this project useful, consider **starring the repo** to help others d
 
 ---
 
-## 🏆 Hall Of Fame
+## 📌 Useful Links
 
 [Hall Of Fame](./HALL_OF_FAME.md)
 
