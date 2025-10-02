@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class binarySearch {
+public class BinarySearch {
     public static void main(String[] args) {
         // Sample sorted array for demonstration
         int a[] = {1, 5, 8, 9, 12, 13, 17, 19};
