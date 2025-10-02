@@ -1,101 +1,72 @@
-name: 🏆 Update Contributors
+name: Update Contributors
 
 on:
+  workflow_dispatch:
   push:
-    branches: [main]
-  pull_request:
-    types: [closed]
-    branches: [main]
-  workflow_dispatch: # Allow manual trigger
+    branches:
+      - main
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
-  update-contributors:
+  update:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || (github.event.pull_request.merged == true)
-
     steps:
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        fetch-depth: 0
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: 🧑‍💻 Identify Contributor
-      id: get_contributor
-      run: |
-        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-          echo "contributor=${{ github.event.pull_request.user.login }}" >> $GITHUB_OUTPUT
-        else
-          echo "contributor=${{ github.actor }}" >> $GITHUB_OUTPUT
-        fi
+      - name: Fetch contributors and update Hall of Fame & README
+        run: |
+          # Fetch all contributors (excluding bots)
+          CONTRIBUTORS=$(curl -s "https://api.github.com/repos/admirerr/DSA-Collection/contributors?per_page=100" \
+            | jq -r '.[] | select(.type != "Bot") | [.login, .avatar_url, .html_url, .contributions] | @tsv' \
+            | sort -k4,4nr)
 
-    - name: 🤝 Fetch Contributor Details
-      id: contributor_details
-      run: |
-        USER_INFO=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/users/${{ steps.get_contributor.outputs.contributor }}")
-        echo "avatar_url=$(echo "$USER_INFO" | jq -r '.avatar_url')" >> $GITHUB_OUTPUT
+          # --- Build HTML blocks for Hall of Fame ---
+          TABLE=$(echo "$CONTRIBUTORS" | awk -F'\t' '{printf "<a href=\"%s\" style=\"text-decoration:none; margin:10px;\"><img src=\"%s\" width=\"80\" height=\"80\" style=\"border-radius:50%%;\"><br>%s</a>\n", $3, $2, $1}')
 
-    - name: ✨ Update Contributor Profile
-      run: |
-        CONTRIBUTOR="${{ steps.get_contributor.outputs.contributor }}"
-        AVATAR_URL="${{ steps.contributor_details.outputs.avatar_url }}"
-        CONTRIBUTOR_LINE="<a href='https://github.com/$CONTRIBUTOR'><img src='$AVATAR_URL' width='50px' alt='$CONTRIBUTOR'/></a>"
+          # --- Build avatars row for README ---
+          AVATARS="<div align=\"center\">$(echo "$CONTRIBUTORS" | awk -F'\t' '{printf "[<img src=\"%s\" width=\"80\" height=\"80\" style=\"border-radius:50%%;\" alt=\"%s\"/>](%s) ", $2, $1, $3}'))</div>"
 
-        # Update Hall of Fame
-        if ! grep -i -q "$CONTRIBUTOR" HALL_OF_FAME.md; then
-          sed -i "/<!-- This section is automatically updated by our GitHub Actions workflow -->/a $CONTRIBUTOR_LINE" HALL_OF_FAME.md
-        fi
+          # --- Update Hall of Fame ---
+          awk -v table="$TABLE" '
+            /<!-- Contributors will be automatically updated by GitHub Actions -->/ {
+              print;
+              print table;
+              next;
+            }
+            {print}
+          ' HALL_OF_FAME.md > temp && mv temp HALL_OF_FAME.md
 
-        # Update README
-        if ! grep -q "## ✨ Our Amazing Contributors" README.md; then
-          echo -e "\n## ✨ Our Amazing Contributors\n\n<!-- This section is automatically updated by our GitHub Actions workflow -->\n" >> README.md
-        fi
-        if ! grep -i -q "$CONTRIBUTOR" README.md; then
-          echo "Updating README.md for contributor: $CONTRIBUTOR"
-          sed -i "/<!-- This section is automatically updated by our GitHub Actions workflow -->/a $CONTRIBUTOR_LINE" README.md
-        fi
+          # --- Update README ---
+          awk -v avatars="$AVATARS" '
+            /<!-- CONTRIBUTORS START -->/ {
+              print;
+              print avatars;
+              in_block=1; next;
+            }
+            in_block && /<!-- CONTRIBUTORS END -->/ {print; in_block=0; next}
+            in_block {next}
+            {print}
+          ' README.md > temp && mv temp README.md
 
-    - name: 📊 Fetch Repository Statistics
-      id: repo_stats
-      run: |
-        CONTRIBUTORS_COUNT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100" | \
-          jq -r '[.[] | select(.type != "Bot")] | length')
-        echo "contributors_count=$CONTRIBUTORS_COUNT" >> $GITHUB_OUTPUT
+      - name: Update Implementation Counts
+        run: |
+          # Update total implementations
+          sed -i 's/| 🎯 \*\*Total Implementations\*\* | [0-9]\+ |/| 🎯 **Total Implementations** | 22 |/' HALL_OF_FAME.md
 
-        CPP_FILES=$(find CPP -name '*.cpp' | wc -l)
-        JAVA_FILES=$(find Java -name '*.java' | wc -l)
-        PYTHON_FILES=$(find Python -name '*.py' | wc -l)
-        TOTAL_FILES=$((CPP_FILES + JAVA_FILES + PYTHON_FILES))
-        echo "total_implementations=$TOTAL_FILES" >> $GITHUB_OUTPUT
-        echo "cpp_implementations=$CPP_FILES" >> $GITHUB_OUTPUT
-        echo "java_implementations=$JAVA_FILES" >> $GITHUB_OUTPUT
-        echo "python_implementations=$PYTHON_FILES" >> $GITHUB_OUTPUT
+          # Update per-language implementations
+          sed -i '/### Python/{n;s/- Implementations: [0-9]\+/- Implementations: 6/}' HALL_OF_FAME.md
+          sed -i '/### C++/{n;s/- Implementations: [0-9]\+/- Implementations: 4/}' HALL_OF_FAME.md
+          sed -i '/### Java/{n;s/- Implementations: [0-9]\+/- Implementations: 12/}' HALL_OF_FAME.md
 
-    - name: 📈 Update Hall of Fame Statistics
-      run: |
-        sed -i "s/| 🎯 **Total Implementations** | [0-9]* |/| 🎯 **Total Implementations** | ${{ steps.repo_stats.outputs.total_implementations }} |/g" HALL_OF_FAME.md
-        sed -i "s/### Python\n- Implementations: [0-9]*/### Python\n- Implementations: ${{ steps.repo_stats.outputs.python_implementations }}/g" HALL_OF_FAME.md
-        sed -i "s/### C\+\+\n- Implementations: [0-9]*/### C++\n- Implementations: ${{ steps.repo_stats.outputs.cpp_implementations }}/g" HALL_OF_FAME.md
-        sed -i "s/### Java\n- Implementations: [0-9]*/### Java\n- Implementations: ${{ steps.repo_stats.outputs.java_implementations }}/g" HALL_OF_FAME.md
-
-    - name: 📅 Update Last Modified Date
-      run: |
-        current_date=$(date +"%B %Y")
-        sed -i "s/\*Last updated: .* [0-9]*
-*/\*Last updated: $current_date\n*/g" HALL_OF_FAME.md
-
-    - name: 💾 Commit and Push Changes
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add README.md HALL_OF_FAME.md
-        if ! git diff --staged --quiet; then
-          git commit -m "🏆 Chore: Update contributor statistics and profiles"
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add HALL_OF_FAME.md README.md
+          git commit -m "Update contributors and implementations" || echo "No changes to commit"
           git push
-        fi

@@ -1,48 +1,52 @@
-# 🏆 DSA Collection Hall of Fame
+# 🌟 DSA Collection Hall of Fame
 
-**Total 2025 Contributors: 3+ Amazing Developers!**
+We are incredibly grateful to all our amazing contributors who make this repository a valuable resource for learning DSA! Your contributions of implementations, improvements, and insights help the community grow every day. Keep up the fantastic work! 🚀
 
-We extend our heartfelt gratitude to all **3+ contributors** who have contributed to this repository during Hacktoberfest 2025! Your dedication to sharing knowledge and improving the coding community is truly inspiring.
+<div align="center">
 
-## 📊 Repository Statistics
+<!-- Contributors will be automatically updated by GitHub Actions -->
+<a href="https://github.com/admirerr" style="text-decoration:none; margin:10px;"><img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="80" height="80" style="border-radius:50%;"><br>admirerr</a>
+<a href="https://github.com/Vivek13121" style="text-decoration:none; margin:10px;"><img src="https://avatars.githubusercontent.com/u/171781925?v=4" width="80" height="80" style="border-radius:50%;"><br>Vivek13121</a>
+<a href="https://github.com/actions-user" style="text-decoration:none; margin:10px;"><img src="https://avatars.githubusercontent.com/u/65916846?v=4" width="80" height="80" style="border-radius:50%;"><br>actions-user</a>
+<a href="https://github.com/adesh2756" style="text-decoration:none; margin:10px;"><img src="https://avatars.githubusercontent.com/u/222441895?v=4" width="80" height="80" style="border-radius:50%;"><br>adesh2756</a>
+<a href="https://github.com/Anujmishra2005" style="text-decoration:none; margin:10px;"><img src="https://avatars.githubusercontent.com/u/72244992?v=4" width="80" height="80" style="border-radius:50%;"><br>Anujmishra2005</a>
+<a href="https://github.com/djashan" style="text-decoration:none; margin:10px;"><img src="https://avatars.githubusercontent.com/u/41038007?v=4" width="80" height="80" style="border-radius:50%;"><br>djashan</a>
+<a href="https://github.com/ramanuj-droid" style="text-decoration:none; margin:10px;"><img src="https://avatars.githubusercontent.com/u/197562965?v=4" width="80" height="80" style="border-radius:50%;"><br>ramanuj-droid</a>
+<a href="https://github.com/ruturajjadhav07" style="text-decoration:none; margin:10px;"><img src="https://avatars.githubusercontent.com/u/109014091?v=4" width="80" height="80" style="border-radius:50%;"><br>ruturajjadhav07</a>
+<a href="https://github.com/sujanrupu" style="text-decoration:none; margin:10px;"><img src="https://avatars.githubusercontent.com/u/103595490?v=4" width="80" height="80" style="border-radius:50%;"><br>sujanrupu</a>
+<!-- Example: -->
+<a href="https://github.com/admirerr" style="text-decoration:none; margin:10px;">
+  <img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="80" height="80" style="border-radius:50%;"><br>
+  admirerr
+</a>
+<a href="https://github.com/Vivek13121" style="text-decoration:none; margin:10px;">
+  <img src="https://avatars.githubusercontent.com/u/171781925?v=4" width="80" height="80" style="border-radius:50%;"><br>
+  Vivek13121
+</a>
+<a href="https://github.com/actions-user" style="text-decoration:none; margin:10px;">
+  <img src="https://avatars.githubusercontent.com/u/65916846?v=4" width="80" height="80" style="border-radius:50%;"><br>
+  actions-user
+</a>
 
-| Category | Count |
-|----------|-------|
-| 👥 **Total Contributors** | 3+ Amazing Developers |
-| 💻 **Languages** | Python, C++, Java |
-| 📁 **Categories** | Searching, Sorting, Graph Algorithms, String Algorithms |
-| 🎯 **Total Implementations** | 0 |
+</div>
 
-## 🌟 Top Contributors
+---
 
-Our amazing contributors who have helped make this repository a valuable resource for everyone:
+| 🎯 **Total Implementations** | 22 |
 
-<!-- This section is automatically updated by our GitHub Actions workflow -->
-<a href='https://github.com/admirerr'><img src='https://avatars.githubusercontent.com/u/79766263?v=4' width='50px' alt='admirerr'/></a>
-
-## 🏅 Contributors by Language
+---
 
 ### Python
-- Implementations: 0
-- Contributors: 0
+- Implementations: 6
 
 ### C++
-- Implementations: 0
-- Contributors: 0
+- Implementations: 4
 
 ### Java
-- Implementations: 0
-- Contributors: 0
-
-## 📈 Monthly Progress
-
-### October 2025
-- New Contributors: 0
-- New Implementations: 0
-- Most Active Category: -
+- Implementations: 12
 
 ---
 
 *Last updated: October 2025*
 
-Thank you to everyone who has contributed to making this repository a valuable resource for the DSA learning community! 🎉
+Thank you to everyone for your contributions and support in building a thriving DSA community! 🎉
