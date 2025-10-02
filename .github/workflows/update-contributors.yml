@@ -151,6 +151,7 @@ jobs:
 
     - name: 💾 Create Pull Request
       if: steps.changes.outputs.has_changes == 'true'
+      id: cpr
       uses: peter-evans/create-pull-request@v6
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -178,6 +179,20 @@ jobs:
         labels: |
           documentation
           automated
+    
+    - name: 📊 PR Creation Result
+      if: steps.changes.outputs.has_changes == 'true'
+      run: |
+        echo "PR Number: ${{ steps.cpr.outputs.pull-request-number }}"
+        echo "PR URL: ${{ steps.cpr.outputs.pull-request-url }}"
+        echo "PR Operation: ${{ steps.cpr.outputs.pull-request-operation }}"
+        echo "PR Head SHA: ${{ steps.cpr.outputs.pull-request-head-sha }}"
+        
+        if [ -z "${{ steps.cpr.outputs.pull-request-number }}" ]; then
+          echo "⚠️ No PR was created (possibly no changes or PR already exists)"
+        else
+          echo "✅ PR #${{ steps.cpr.outputs.pull-request-number }} ${{ steps.cpr.outputs.pull-request-operation }}"
+        fi
 
     - name: 📋 Summary
       run: |
@@ -185,9 +200,17 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         
         if [ "${{ steps.changes.outputs.has_changes }}" == "true" ]; then
-          echo "✅ **Status**: Pull request created successfully!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📝 **Action Required**: Please review and merge the PR to apply updates." >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ steps.cpr.outputs.pull-request-number }}" ]; then
+            echo "✅ **Status**: Pull request ${{ steps.cpr.outputs.pull-request-operation }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🔗 **PR**: [#${{ steps.cpr.outputs.pull-request-number }}](${{ steps.cpr.outputs.pull-request-url }})" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "📝 **Action Required**: Please review and merge the PR to apply updates." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Status**: Changes detected but PR was not created" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "This may happen if the PR already exists with the same changes." >> $GITHUB_STEP_SUMMARY
+          fi
         else
           echo "ℹ️ **Status**: No changes needed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
