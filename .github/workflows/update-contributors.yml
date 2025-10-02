@@ -179,6 +179,33 @@ jobs:
         labels: |
           documentation
           automated
+
+    - name: 💾 Commit Directly to Main
+      if: steps.changes.outputs.has_changes == 'true' && github.event_name != 'pull_request'
+      run: |
+        echo "⚙️ Configuring git for direct commit..."
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+
+        echo "📦 Staging changes..."
+        git add README.md HALL_OF_FAME.md
+
+        echo "💬 Creating commit..."
+        git commit -m "🏆 Auto-update contributor statistics [skip ci]"
+
+        echo "🚀 Pushing directly to main..."
+        git push origin main || {
+          echo "❌ Failed to push to main branch"
+          echo "⚠️ This happens because of branch protection rules."
+          echo "💡 The changes are prepared but couldn't be pushed."
+          echo ""
+          echo "Options:"
+          echo "1. Temporarily disable branch protection for bots"
+          echo "2. Manually apply the changes from the workflow artifacts"
+          exit 1
+        }
+
+        echo "✅ Successfully pushed contributors update to main!"
     
     - name: 📊 PR Creation Result
       if: steps.changes.outputs.has_changes == 'true' && github.event_name == 'pull_request'
@@ -213,11 +240,11 @@ jobs:
               echo "This may happen if the PR already exists with the same changes." >> $GITHUB_STEP_SUMMARY
             fi
           else
-            echo "✅ **Status**: Contributors list updated" >> $GITHUB_STEP_SUMMARY
+            echo "✅ **Status**: Contributors list committed to main" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "📌 **Trigger**: Direct push to main" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "ℹ️ No PR created for direct pushes. Changes are ready in working directory." >> $GITHUB_STEP_SUMMARY
+            echo "🎉 Contributors list has been updated and pushed directly to main branch!" >> $GITHUB_STEP_SUMMARY
           fi
         else
           echo "ℹ️ **Status**: No changes needed" >> $GITHUB_STEP_SUMMARY
