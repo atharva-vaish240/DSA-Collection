@@ -90,3 +90,10 @@ And we're excited to accept solutions in:
 ## ⭐ Support
 
 If you find this project useful, consider **starring the repo** to help others discover it.
+
+---
+
+## 🏆 Hall Of Fame
+
+[Hall Of Fame](./HALL_OF_FAME.md)
+
