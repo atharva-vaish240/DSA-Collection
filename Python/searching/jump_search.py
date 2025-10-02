@@ -1,9 +1,8 @@
 import math
 
-def jump_search(arr, target):
+def jump_search(arr, x):
     n = len(arr)
-main
-    step = int(math.sqrt(n))  # Optimal block size
+    step = int(n ** 0.5)  # <-- indentation fixed
     prev = 0
 
     # Jump ahead in blocks
