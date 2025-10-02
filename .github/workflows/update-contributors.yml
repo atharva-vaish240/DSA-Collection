@@ -48,7 +48,6 @@ jobs:
         } > contributors.html
 
         echo "📄 Contributors HTML generated"
-        echo ""
 
         # Verify README.md exists
         if [ ! -f "README.md" ]; then
@@ -56,9 +55,6 @@ jobs:
           exit 1
         fi
 
-        echo "✅ README.md found"
-        echo "📝 Checking for contributor tags..."
-        
         # Check if tags exist
         if ! grep -q "<!-- CONTRIBUTORS_LIST -->" README.md; then
           echo "❌ ERROR: <!-- CONTRIBUTORS_LIST --> tag not found in README.md"
@@ -150,7 +146,7 @@ jobs:
         fi
 
     - name: 💾 Create Pull Request
-      if: steps.changes.outputs.has_changes == 'true' && github.event_name == 'pull_request'
+      if: steps.changes.outputs.has_changes == 'true'
       id: cpr
       uses: peter-evans/create-pull-request@v6
       with:
@@ -164,61 +160,34 @@ jobs:
         body: |
           ## 🤖 Automated Contributor Update
           
-          This PR automatically updates the contributors list after PR #${{ github.event.pull_request.number }} was merged.
+          This PR automatically updates the contributors list and statistics.
           
           ### 📋 What's Updated:
-          - 👥 Contributors avatars in README.md (added @${{ github.event.pull_request.user.login }})
+          - 👥 Contributors avatars in README.md
           - 📊 Language statistics
           - 📅 Last modified date
           
-          ### ℹ️ Instructions:
-          **Please review and merge this PR** to keep the contributors list up-to-date.
+          ### 🔍 Trigger Information:
+          ${{ github.event_name == 'pull_request' && format('- Triggered by merged PR #{0}', github.event.pull_request.number) || '- Triggered by push to main branch' }}
+          ${{ github.event_name == 'pull_request' && format('- New contributor: @{0}', github.event.pull_request.user.login) || '' }}
+          
+          ### ✅ Action Required:
+          **Simply click "Merge pull request"** to apply the contributor updates.
           
           ---
-          <sub>🤖 This is an automated PR created by GitHub Actions</sub>
+          <sub>🤖 Automated PR by GitHub Actions</sub>
         labels: |
           documentation
           automated
-
-    - name: 💾 Commit Directly to Main
-      if: steps.changes.outputs.has_changes == 'true' && github.event_name != 'pull_request'
-      run: |
-        echo "⚙️ Configuring git for direct commit..."
-        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-
-        echo "📦 Staging changes..."
-        git add README.md HALL_OF_FAME.md
-
-        echo "💬 Creating commit..."
-        git commit -m "🏆 Auto-update contributor statistics [skip ci]"
-
-        echo "🚀 Pushing directly to main..."
-        git push origin main || {
-          echo "❌ Failed to push to main branch"
-          echo "⚠️ This happens because of branch protection rules."
-          echo "💡 The changes are prepared but couldn't be pushed."
-          echo ""
-          echo "Options:"
-          echo "1. Temporarily disable branch protection for bots"
-          echo "2. Manually apply the changes from the workflow artifacts"
-          exit 1
-        }
-
-        echo "✅ Successfully pushed contributors update to main!"
     
-    - name: 📊 PR Creation Result
-      if: steps.changes.outputs.has_changes == 'true' && github.event_name == 'pull_request'
+    - name: 📊 Output PR Details
+      if: steps.changes.outputs.has_changes == 'true'
       run: |
-        echo "PR Number: ${{ steps.cpr.outputs.pull-request-number }}"
-        echo "PR URL: ${{ steps.cpr.outputs.pull-request-url }}"
-        echo "PR Operation: ${{ steps.cpr.outputs.pull-request-operation }}"
-        echo "PR Head SHA: ${{ steps.cpr.outputs.pull-request-head-sha }}"
-        
-        if [ -z "${{ steps.cpr.outputs.pull-request-number }}" ]; then
-          echo "⚠️ No PR was created (possibly no changes or PR already exists)"
-        else
+        if [ -n "${{ steps.cpr.outputs.pull-request-number }}" ]; then
           echo "✅ PR #${{ steps.cpr.outputs.pull-request-number }} ${{ steps.cpr.outputs.pull-request-operation }}"
+          echo "🔗 ${{ steps.cpr.outputs.pull-request-url }}"
+        else
+          echo "ℹ️ PR already exists with these changes"
         fi
 
     - name: 📋 Summary
@@ -227,27 +196,29 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         
         if [ "${{ steps.changes.outputs.has_changes }}" == "true" ]; then
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            if [ -n "${{ steps.cpr.outputs.pull-request-number }}" ]; then
-              echo "✅ **Status**: Pull request ${{ steps.cpr.outputs.pull-request-operation }}" >> $GITHUB_STEP_SUMMARY
-              echo "" >> $GITHUB_STEP_SUMMARY
-              echo "🔗 **PR**: [#${{ steps.cpr.outputs.pull-request-number }}](${{ steps.cpr.outputs.pull-request-url }})" >> $GITHUB_STEP_SUMMARY
-              echo "" >> $GITHUB_STEP_SUMMARY
-              echo "📝 **Action Required**: Please review and merge the PR to apply updates." >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ steps.cpr.outputs.pull-request-number }}" ]; then
+            echo "✅ **Status**: Pull request ${{ steps.cpr.outputs.pull-request-operation }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🔗 **PR**: [#${{ steps.cpr.outputs.pull-request-number }}](${{ steps.cpr.outputs.pull-request-url }})" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            if [ "${{ github.event_name }}" == "pull_request" ]; then
+              echo "📌 **Triggered by**: PR #${{ github.event.pull_request.number }}" >> $GITHUB_STEP_SUMMARY
+              echo "👤 **New contributor**: @${{ github.event.pull_request.user.login }}" >> $GITHUB_STEP_SUMMARY
             else
-              echo "⚠️ **Status**: Changes detected but PR was not created" >> $GITHUB_STEP_SUMMARY
-              echo "" >> $GITHUB_STEP_SUMMARY
-              echo "This may happen if the PR already exists with the same changes." >> $GITHUB_STEP_SUMMARY
+              echo "📌 **Triggered by**: Push to main" >> $GITHUB_STEP_SUMMARY
             fi
+            
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ✅ Next Step" >> $GITHUB_STEP_SUMMARY
+            echo "Review and merge the PR to update the contributors list!" >> $GITHUB_STEP_SUMMARY
           else
-            echo "✅ **Status**: Contributors list committed to main" >> $GITHUB_STEP_SUMMARY
+            echo "ℹ️ **Status**: PR already exists with the same changes" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "📌 **Trigger**: Direct push to main" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "🎉 Contributors list has been updated and pushed directly to main branch!" >> $GITHUB_STEP_SUMMARY
+            echo "Check existing PRs for contributors updates." >> $GITHUB_STEP_SUMMARY
           fi
         else
-          echo "ℹ️ **Status**: No changes needed" >> $GITHUB_STEP_SUMMARY
+          echo "✨ **Status**: No changes needed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✨ Contributors list is already up-to-date!" >> $GITHUB_STEP_SUMMARY
+          echo "Contributors list is already up-to-date!" >> $GITHUB_STEP_SUMMARY
         fi
