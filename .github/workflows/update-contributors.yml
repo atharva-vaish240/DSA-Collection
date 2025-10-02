@@ -1,9 +1,6 @@
 name: 🏆 Update Contributors
 
 on:
-  push:
-    branches: 
-      - main
   pull_request:
     types: [closed]
     branches: [main]
@@ -16,11 +13,10 @@ permissions:
 jobs:
   update-contributors:
     runs-on: ubuntu-latest
-    # Run on push to main, manual trigger, or when PR is merged
-    # But skip if the commit message contains [skip ci] or is from the bot itself
+    # Only run when PR is merged or manually triggered
+    # Skip if the commit message contains [skip ci] or is from the bot itself
     if: |
-      (github.event_name == 'push' || 
-       github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_dispatch' ||
        (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) &&
       !contains(github.event.head_commit.message, '[skip ci]') &&
       !contains(github.event.head_commit.message, 'Auto-update contributor')
@@ -160,7 +156,7 @@ jobs:
         body: |
           ## 🤖 Automated Contributor Update
           
-          This PR automatically updates the contributors list and statistics.
+          This PR automatically updates the contributors list after a PR was merged.
           
           ### 📋 What's Updated:
           - 👥 Contributors avatars in README.md
@@ -168,14 +164,13 @@ jobs:
           - 📅 Last modified date
           
           ### 🔍 Trigger Information:
-          ${{ github.event_name == 'pull_request' && format('- Triggered by merged PR #{0}', github.event.pull_request.number) || '- Triggered by push to main branch' }}
-          ${{ github.event_name == 'pull_request' && format('- New contributor: @{0}', github.event.pull_request.user.login) || '' }}
+          ${{ github.event_name == 'pull_request' && format('- ✅ Triggered by merged PR #{0} by @{1}', github.event.pull_request.number, github.event.pull_request.user.login) || '- 🔧 Triggered manually' }}
           
           ### ✅ Action Required:
           **Simply click "Merge pull request"** to apply the contributor updates.
           
           ---
-          <sub>🤖 Automated PR by GitHub Actions</sub>
+          <sub>🤖 Automated PR by GitHub Actions | This workflow only runs when PRs are merged</sub>
         labels: |
           documentation
           automated
