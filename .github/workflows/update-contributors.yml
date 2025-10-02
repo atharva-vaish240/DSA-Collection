@@ -28,6 +28,11 @@ jobs:
         ref: main
         fetch-depth: 0
 
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+
     - name: 🏆 Update contributors list
       run: |
         echo "🔍 Fetching contributors from GitHub API..."
@@ -44,6 +49,9 @@ jobs:
         } > contributors.html
 
         echo "📄 Contributors HTML generated"
+        echo "---"
+        cat contributors.html
+        echo "---"
 
         # Verify README.md exists
         if [ ! -f "README.md" ]; then
