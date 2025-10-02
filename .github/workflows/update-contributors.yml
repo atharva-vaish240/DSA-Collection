@@ -1,7 +1,8 @@
 name: 🏆 Update Contributors
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches: [main]
   workflow_dispatch: # Allow manual trigger
 
@@ -15,10 +16,10 @@ jobs:
     # Only run when PR is merged or manually triggered
     # Skip if the commit message contains [skip ci] or is from the bot itself
     if: |
+      github.event.sender.type != 'Bot' &&
       (github.event_name == 'workflow_dispatch' ||
        (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) &&
-      !contains(github.event.head_commit.message, '[skip ci]') &&
-      !contains(github.event.head_commit.message, 'Auto-update contributor')
+      !contains(github.event.head_commit.message, '[skip ci]')
 
     steps:
     - name: 📥 Checkout code
@@ -26,11 +27,6 @@ jobs:
       with:
         ref: main
         fetch-depth: 0
-
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
 
     - name: 🏆 Update contributors list
       run: |
@@ -48,9 +44,6 @@ jobs:
         } > contributors.html
 
         echo "📄 Contributors HTML generated"
-        echo "---"
-        cat contributors.html
-        echo "---"
 
         # Verify README.md exists
         if [ ! -f "README.md" ]; then
