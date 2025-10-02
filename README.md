@@ -96,5 +96,4 @@ If you find this project useful, consider **starring the repo** to help others d
 ## 📌 Useful Links
 
 [🏆 Hall of Fame](./HALL_OF_FAME.md)
-[📝 Contributing Guidelines](./CONTRIBUTING.md)
 
