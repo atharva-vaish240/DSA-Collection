@@ -18,30 +18,31 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Fetch contributors and update Hall of Fame & README
+      - name: Update Contributors in HALL_OF_FAME.md and README.md
         run: |
-          # Fetch all contributors (excluding bots)
           CONTRIBUTORS=$(curl -s "https://api.github.com/repos/admirerr/DSA-Collection/contributors?per_page=100" \
             | jq -r '.[] | select(.type != "Bot") | [.login, .avatar_url, .html_url, .contributions] | @tsv' \
             | sort -k4,4nr)
 
-          # --- Build HTML blocks for Hall of Fame ---
-          TABLE=$(echo "$CONTRIBUTORS" | awk -F'\t' '{printf "<a href=\"%s\" style=\"text-decoration:none; margin:10px;\"><img src=\"%s\" width=\"80\" height=\"80\" style=\"border-radius:50%%;\"><br>%s</a>\n", $3, $2, $1}')
+          # Build Hall of Fame table with small avatars and handle below
+          TABLE=$(echo "$CONTRIBUTORS" | awk -F'\t' '{printf "| <div align=\"center\"><img src=\"%s\" width=\"50\" height=\"50\"/><br>[%s](%s)</div> | %s |\n", $2, $1, $3, $4}')
 
-          # --- Build avatars row for README ---
-          AVATARS="<div align=\"center\">$(echo "$CONTRIBUTORS" | awk -F'\t' '{printf "[<img src=\"%s\" width=\"80\" height=\"80\" style=\"border-radius:50%%;\" alt=\"%s\"/>](%s) ", $2, $1, $3}'))</div>"
+          # Build avatars row for README (small images)
+          AVATARS=$(echo "$CONTRIBUTORS" | awk -F'\t' '{printf "[<img src=\"%s\" width=\"50\" height=\"50\" alt=\"%s\"/>](%s) ", $2, $1, $3}')
 
-          # --- Update Hall of Fame ---
+          # ---- Update Hall of Fame ----
           awk -v table="$TABLE" '
-            /<!-- Contributors will be automatically updated by GitHub Actions -->/ {
+            /Contributor \| Contributions/ {
               print;
+              print "|-------------|---------------|";
               print table;
-              next;
+              in_block=1; next;
             }
+            in_block && /^\|/ {next}
             {print}
           ' HALL_OF_FAME.md > temp && mv temp HALL_OF_FAME.md
 
-          # --- Update README ---
+          # ---- Update README ----
           awk -v avatars="$AVATARS" '
             /<!-- CONTRIBUTORS START -->/ {
               print;
@@ -55,15 +56,12 @@ jobs:
 
       - name: Update Implementation Counts
         run: |
-          # Update total implementations
           sed -i 's/| 🎯 \*\*Total Implementations\*\* | [0-9]\+ |/| 🎯 **Total Implementations** | 22 |/' HALL_OF_FAME.md
-
-          # Update per-language implementations
           sed -i '/### Python/{n;s/- Implementations: [0-9]\+/- Implementations: 6/}' HALL_OF_FAME.md
           sed -i '/### C++/{n;s/- Implementations: [0-9]\+/- Implementations: 4/}' HALL_OF_FAME.md
           sed -i '/### Java/{n;s/- Implementations: [0-9]\+/- Implementations: 12/}' HALL_OF_FAME.md
 
-      - name: Commit and Push Changes
+      - name: Commit changes
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
