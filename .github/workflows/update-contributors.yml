@@ -69,10 +69,10 @@ jobs:
         # Update total implementations
         sed -i "s#| 🎯 **Total Implementations** | [0-9]* |#| 🎯 **Total Implementations** | ${{ steps.repo_stats.outputs.total_implementations }} |#g" HALL_OF_FAME.md
 
-        # Update per-language implementations
-        sed -i "0,/- Implementations: [0-9]*/s//- Implementations: ${{ steps.repo_stats.outputs.python_implementations }}/" HALL_OF_FAME.md
-        sed -i "0,/- Implementations: [0-9]*/s//- Implementations: ${{ steps.repo_stats.outputs.cpp_implementations }}/" HALL_OF_FAME.md
-        sed -i "0,/- Implementations: [0-9]*/s//- Implementations: ${{ steps.repo_stats.outputs.java_implementations }}/" HALL_OF_FAME.md
+        # Update per-language implementations (anchored under headers)
+        sed -i "/### Python/{n;s/- Implementations: [0-9]*/- Implementations: ${{ steps.repo_stats.outputs.python_implementations }}/}" HALL_OF_FAME.md
+        sed -i "/### C++/{n;s/- Implementations: [0-9]*/- Implementations: ${{ steps.repo_stats.outputs.cpp_implementations }}/}" HALL_OF_FAME.md
+        sed -i "/### Java/{n;s/- Implementations: [0-9]*/- Implementations: ${{ steps.repo_stats.outputs.java_implementations }}/}" HALL_OF_FAME.md
 
     - name: 📅 Update Last Modified Date
       run: |
