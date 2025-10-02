@@ -2,8 +2,8 @@
 
 | Contributor | Contributions |
 |-------------|---------------|
-| ![admirerr](https://avatars.githubusercontent.com/u/123456?v=4) [admirerr](https://github.com/admirerr) | 20 |
-| ![someoneelse](https://avatars.githubusercontent.com/u/987654?v=4) [someoneelse](https://github.com/someoneelse) | 5 |
+| <div align="center"><img src="https://avatars.githubusercontent.com/u/123456?v=4" width="50" height="50"/><br>[admirerr](https://github.com/admirerr)</div> | 20 |
+| <div align="center"><img src="https://avatars.githubusercontent.com/u/987654?v=4" width="50" height="50"/><br>[someoneelse](https://github.com/someoneelse)</div> | 5 |
 
 ---
 
