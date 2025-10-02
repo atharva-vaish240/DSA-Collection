@@ -119,7 +119,6 @@ And we're excited to accept solutions in:
 
 ## ✅ Rules
 
-- One problem solution per pull request
 - File naming: `problem_name.language_extension`
 - Comment your code clearly
 - The **problem name must be clearly mentioned** in the comments
