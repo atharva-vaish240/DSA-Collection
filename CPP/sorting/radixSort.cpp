@@ -1,57 +1,65 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
-void countingSort(vector<int> &a, int exp) {
-    int n = a.size();
-    vector<int> output(n);
-    vector<int> cnt(10, 0); 
-    for (int i = 0; i < n; i++) 
-        cnt[(a[i] / exp) % 10]++;
+int getMax(std::vector<int>& arr) {
+    int max_val = arr[0];
+    for (size_t i = 1; i < arr.size(); i++) {
+        if (arr[i] > max_val) {
+            max_val = arr[i];
+        }
+    }
+    return max_val;
+}
 
-    for (int i = 1; i < 10; i++) 
-        cnt[i] += cnt[i - 1];
+void countingSort(std::vector<int>& arr, int exp) {
+    int n = arr.size();
+    std::vector<int> output(n);
+    int count[10] = {0};
+
+    for (int i = 0; i < n; i++) {
+        count[(arr[i] / exp) % 10]++;
+    }
+
+    for (int i = 1; i < 10; i++) {
+        count[i] += count[i - 1];
+    }
 
     for (int i = n - 1; i >= 0; i--) {
-        int dig = (a[i] / exp) % 10;
-        output[cnt[dig] - 1] = a[i];
-        cnt[dig]--;
-    }
-    a = output; // copy back
-}
-
-void radixSort(vector<int> &a) {
-    if (a.empty()) return;
-    int mx = *max_element(a.begin(), a.end());
-    for (int exp = 1; mx / exp > 0; exp *= 10)
-        countingSort(a, exp);
-}
-
-void radixSortWithNegatives(vector<int> &a) {
-    vector<int> neg, pos;
-    for (int x : a) {
-        if (x < 0) neg.push_back(-x); 
-        else pos.push_back(x);
+        output[count[(arr[i] / exp) % 10] - 1] = arr[i];
+        count[(arr[i] / exp) % 10]--;
     }
 
-    radixSort(pos);
-    radixSort(neg);
-    reverse(neg.begin(), neg.end()); 
+    for (int i = 0; i < n; i++) {
+        arr[i] = output[i];
+    }
+}
 
-    a.clear();
-    for (int x : neg) a.push_back(-x);
-    for (int x : pos) a.push_back(x);
+void radixSort(std::vector<int>& arr) {
+    int m = getMax(arr);
+
+    for (int exp = 1; m / exp > 0; exp *= 10) {
+        countingSort(arr, exp);
+    }
+}
+
+void printArray(const std::vector<int>& arr) {
+    for (int i : arr) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
 }
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+    std::vector<int> arr = {170, 45, 75, 90, 802, 24, 2, 66};
 
-    int n; 
-    cin >> n;
-    vector<int> a(n);
-    for (int i = 0; i < n; i++) cin >> a[i];
+    std::cout << "Original array: ";
+    printArray(arr);
 
-    radixSortWithNegatives(a);
-    for (int x : a) cout << x << " ";
-    cout << "\n";
+    radixSort(arr);
+
+    std::cout << "Sorted array:   ";
+    printArray(arr);
+
+    return 0;
 }
