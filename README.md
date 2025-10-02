@@ -80,13 +80,6 @@ If you're learning DSA or want to practice contributing to open source, this rep
 
 ---
 
-## 📊 Repository Stats
-
-- 💻 **3+ Languages**
-- ✨ **0+ Total Implementations**
-
----
-
 ## ✨ Our Amazing Contributors
 
 <!-- This section is automatically updated by our GitHub Actions workflow -->
