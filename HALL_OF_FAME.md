@@ -4,7 +4,7 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 
 | Contributor | Contributions |
 |-------------|---------------|
-| <div align="center"><img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="50" height="50"/><br>[admirerr](https://github.com/admirerr)</div> | 82 |
+| <div align="center"><img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="50" height="50"/><br>[admirerr](https://github.com/admirerr)</div> | 72 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/171781925?v=4" width="50" height="50"/><br>[Vivek13121](https://github.com/Vivek13121)</div> | 3 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/65916846?v=4" width="50" height="50"/><br>[actions-user](https://github.com/actions-user)</div> | 3 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/222441895?v=4" width="50" height="50"/><br>[adesh2756](https://github.com/adesh2756)</div> | 3 |
