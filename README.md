@@ -1,4 +1,4 @@
-# Welcome to the **DSA Code Repository**! 
+# Welcome to the **DSA Collection Repository**! 
 
 This is a comprehensive collection of **Data Structures and Algorithms** implementations in multiple programming languages, organized specifically for **Hacktoberfest 2025** contributions.
 
