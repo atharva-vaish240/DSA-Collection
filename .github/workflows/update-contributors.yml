@@ -15,7 +15,7 @@ permissions:
 jobs:
   update-contributors:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || (github.event.pull_request.merged == true)
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
 
     steps:
     - name: 📥 Checkout Code
@@ -67,10 +67,21 @@ jobs:
           jq -r '[.[] | select(.type != "Bot")] | length')
         echo "contributors_count=$CONTRIBUTORS_COUNT" >> $GITHUB_OUTPUT
 
-    - name: 📈 Update Statistics in Files
+        CPP_FILES=$(find CPP -name '*.cpp' | wc -l)
+        JAVA_FILES=$(find Java -name '*.java' | wc -l)
+        PYTHON_FILES=$(find Python -name '*.py' | wc -l)
+        TOTAL_FILES=$((CPP_FILES + JAVA_FILES + PYTHON_FILES))
+        echo "total_implementations=$TOTAL_FILES" >> $GITHUB_OUTPUT
+        echo "cpp_implementations=$CPP_FILES" >> $GITHUB_OUTPUT
+        echo "java_implementations=$JAVA_FILES" >> $GITHUB_OUTPUT
+        echo "python_implementations=$PYTHON_FILES" >> $GITHUB_OUTPUT
+
+    - name: 📈 Update Hall of Fame Statistics
       run: |
-        sed -i "s/🎯 \*\*[0-9]*+ Contributors\*\* /🎯 **${{ steps.repo_stats.outputs.contributors_count }}+ Contributors**/g" README.md
-        sed -i "s/\*\*Total 2025 Contributors: [0-9]*+ Amazing Developers!\*\* /\**Total 2025 Contributors: ${{ steps.repo_stats.outputs.contributors_count }}+ Amazing Developers!\**/g" HALL_OF_FAME.md
+        sed -i "s/| 🎯 **Total Implementations** | [0-9]* |/| 🎯 **Total Implementations** | ${{ steps.repo_stats.outputs.total_implementations }} |/g" HALL_OF_FAME.md
+        sed -i "s/### Python\n- Implementations: [0-9]*/### Python\n- Implementations: ${{ steps.repo_stats.outputs.python_implementations }}/g" HALL_OF_FAME.md
+        sed -i "s/### C\+\+\n- Implementations: [0-9]*/### C++\n- Implementations: ${{ steps.repo_stats.outputs.cpp_implementations }}/g" HALL_OF_FAME.md
+        sed -i "s/### Java\n- Implementations: [0-9]*/### Java\n- Implementations: ${{ steps.repo_stats.outputs.java_implementations }}/g" HALL_OF_FAME.md
 
     - name: 📅 Update Last Modified Date
       run: |
