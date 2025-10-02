@@ -30,27 +30,11 @@ If you're learning DSA or want to practice contributing to open source, this rep
 
 ---
 
+
 ## 📂 Repository Structure
 
-DSA-Collection
-│
-├── C++
-│ ├── arrays
-│ │ └── example.cpp
-│ ├── graphs
-│ │ └── example.cpp
-│
-├── Python
-│ ├── arrays
-│ │ └── example.py
-│ ├── trees
-│ │ └── example.py
-│
-├── Java
-│ ├── arrays
-│ │ └── example.java
-│
-└── README.md
+<img width="259" height="390" alt="Screenshot 2025-10-02 at 7 20 10 AM" src="https://github.com/user-attachments/assets/254433b3-c5d3-488a-b65c-ccfa515de10b" />
+
 
 ---
 
