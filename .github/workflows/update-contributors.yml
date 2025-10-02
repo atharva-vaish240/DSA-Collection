@@ -150,7 +150,7 @@ jobs:
         fi
 
     - name: 💾 Create Pull Request
-      if: steps.changes.outputs.has_changes == 'true'
+      if: steps.changes.outputs.has_changes == 'true' && github.event_name == 'pull_request'
       id: cpr
       uses: peter-evans/create-pull-request@v6
       with:
@@ -164,10 +164,10 @@ jobs:
         body: |
           ## 🤖 Automated Contributor Update
           
-          This PR automatically updates the contributors list and statistics.
+          This PR automatically updates the contributors list after PR #${{ github.event.pull_request.number }} was merged.
           
           ### 📋 What's Updated:
-          - 👥 Contributors avatars in README.md
+          - 👥 Contributors avatars in README.md (added @${{ github.event.pull_request.user.login }})
           - 📊 Language statistics
           - 📅 Last modified date
           
@@ -181,7 +181,7 @@ jobs:
           automated
     
     - name: 📊 PR Creation Result
-      if: steps.changes.outputs.has_changes == 'true'
+      if: steps.changes.outputs.has_changes == 'true' && github.event_name == 'pull_request'
       run: |
         echo "PR Number: ${{ steps.cpr.outputs.pull-request-number }}"
         echo "PR URL: ${{ steps.cpr.outputs.pull-request-url }}"
@@ -200,16 +200,24 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         
         if [ "${{ steps.changes.outputs.has_changes }}" == "true" ]; then
-          if [ -n "${{ steps.cpr.outputs.pull-request-number }}" ]; then
-            echo "✅ **Status**: Pull request ${{ steps.cpr.outputs.pull-request-operation }}" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "🔗 **PR**: [#${{ steps.cpr.outputs.pull-request-number }}](${{ steps.cpr.outputs.pull-request-url }})" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "📝 **Action Required**: Please review and merge the PR to apply updates." >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            if [ -n "${{ steps.cpr.outputs.pull-request-number }}" ]; then
+              echo "✅ **Status**: Pull request ${{ steps.cpr.outputs.pull-request-operation }}" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "🔗 **PR**: [#${{ steps.cpr.outputs.pull-request-number }}](${{ steps.cpr.outputs.pull-request-url }})" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "📝 **Action Required**: Please review and merge the PR to apply updates." >> $GITHUB_STEP_SUMMARY
+            else
+              echo "⚠️ **Status**: Changes detected but PR was not created" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "This may happen if the PR already exists with the same changes." >> $GITHUB_STEP_SUMMARY
+            fi
           else
-            echo "⚠️ **Status**: Changes detected but PR was not created" >> $GITHUB_STEP_SUMMARY
+            echo "✅ **Status**: Contributors list updated" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "This may happen if the PR already exists with the same changes." >> $GITHUB_STEP_SUMMARY
+            echo "📌 **Trigger**: Direct push to main" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "ℹ️ No PR created for direct pushes. Changes are ready in working directory." >> $GITHUB_STEP_SUMMARY
           fi
         else
           echo "ℹ️ **Status**: No changes needed" >> $GITHUB_STEP_SUMMARY
