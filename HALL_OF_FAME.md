@@ -4,24 +4,26 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 
 <div align="center">
 
-| Contributor | Contributions |
-|-------------|---------------|
-<div align="center">| <div><img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="50" height="50" style="border-radius:50%;"/><br>[admirerr](https://github.com/admirerr)</div> | 72 |
-</div><div align="center">| <div><img src="https://avatars.githubusercontent.com/u/171781925?v=4" width="50" height="50" style="border-radius:50%;"/><br>[Vivek13121](https://github.com/Vivek13121)</div> | 3 |
-</div><div align="center">| <div><img src="https://avatars.githubusercontent.com/u/65916846?v=4" width="50" height="50" style="border-radius:50%;"/><br>[actions-user](https://github.com/actions-user)</div> | 3 |
-</div><div align="center">| <div><img src="https://avatars.githubusercontent.com/u/222441895?v=4" width="50" height="50" style="border-radius:50%;"/><br>[adesh2756](https://github.com/adesh2756)</div> | 3 |
-</div><div align="center">| <div><img src="https://avatars.githubusercontent.com/u/72244992?v=4" width="50" height="50" style="border-radius:50%;"/><br>[Anujmishra2005](https://github.com/Anujmishra2005)</div> | 1 |
-</div><div align="center">| <div><img src="https://avatars.githubusercontent.com/u/41038007?v=4" width="50" height="50" style="border-radius:50%;"/><br>[djashan](https://github.com/djashan)</div> | 1 |
-</div><div align="center">| <div><img src="https://avatars.githubusercontent.com/u/197562965?v=4" width="50" height="50" style="border-radius:50%;"/><br>[ramanuj-droid](https://github.com/ramanuj-droid)</div> | 1 |
-</div><div align="center">| <div><img src="https://avatars.githubusercontent.com/u/109014091?v=4" width="50" height="50" style="border-radius:50%;"/><br>[ruturajjadhav07](https://github.com/ruturajjadhav07)</div> | 1 |
-</div><div align="center">| <div><img src="https://avatars.githubusercontent.com/u/103595490?v=4" width="50" height="50" style="border-radius:50%;"/><br>[sujanrupu](https://github.com/sujanrupu)</div> | 1 |
-</div>
 <!-- Contributors will be automatically updated by GitHub Actions -->
+<!-- Example: -->
+<a href="https://github.com/admirerr" style="text-decoration:none; margin:10px;">
+  <img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="80" height="80" style="border-radius:50%;"><br>
+  admirerr
+</a>
+<a href="https://github.com/Vivek13121" style="text-decoration:none; margin:10px;">
+  <img src="https://avatars.githubusercontent.com/u/171781925?v=4" width="80" height="80" style="border-radius:50%;"><br>
+  Vivek13121
+</a>
+<a href="https://github.com/actions-user" style="text-decoration:none; margin:10px;">
+  <img src="https://avatars.githubusercontent.com/u/65916846?v=4" width="80" height="80" style="border-radius:50%;"><br>
+  actions-user
+</a>
 
 </div>
 
 ---
 
+| 🎯 **Total Implementations** | 22 |
 
 ---
 
