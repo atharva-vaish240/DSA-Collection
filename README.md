@@ -2,7 +2,7 @@
 
 This is a comprehensive collection of **Data Structures and Algorithms** implementations in multiple programming languages, organized specifically for **Hacktoberfest 2025** contributions.
 
-![Hacktoberfest 2025](./assets/HF2025-EmailHeader.png)
+![Hacktoberfest 2025](./assets/Hacktoberfest.png)
 
 <div align="center">
 
