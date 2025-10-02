@@ -15,7 +15,7 @@ permissions:
 jobs:
   update-contributors:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || (github.event.pull_request.merged == true)
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
 
     steps:
     - name: 📥 Checkout Code
@@ -87,8 +87,7 @@ jobs:
     - name: 📅 Update Last Modified Date
       run: |
         current_date=$(date +"%B %Y")
-        sed -i "s/\*Last updated: .* [0-9]*
-*/\*Last updated: $current_date\n*/g" HALL_OF_FAME.md
+        sed -i "s/\*Last updated: .* [0-9]*\*/\*Last updated: $current_date\*/g" HALL_OF_FAME.md
 
     - name: 💾 Commit and Push Changes
       run: |
