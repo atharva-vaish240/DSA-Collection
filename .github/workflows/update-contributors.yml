@@ -1,78 +1,99 @@
-name: Update Contributors
+name: 🏆 Update Contributors
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    types:
-      - closed
+    types: [closed]
+    branches: [main]
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   update-contributors:
     runs-on: ubuntu-latest
+    # Only run on push to main or when PR is merged (not just closed)
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
 
-      - name: Get Merged Pull Requests
-        id: get_prs
-        run: |
-          PRS=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/admirerr/DSA-Collection/pulls?state=closed&sort=merged&direction=desc&per_page=100" | jq -r '.[] | select(.merged) | "\(.user.login), \(.user.avatar_url), \(.additions.contributors[].user.login)"')
-          echo "::set-output name=prs::$PRS"
+    - name: 🏆 Update contributors list
+      run: |
+        set -x
+        {
+          echo "<div align=\"center\">";
+          echo "  <a href=\"[https://github.com/admirerr/DSA-Collection/graphs/contributors\">"](https://github.com/admirerr/DSA-Collection/graphs/contributors\">");
+        } > contributors.html
 
-      - name: Update Contributors
-        run: |
-          set -x
-          {
-            echo "<div align=\"center\">";
-            echo "  <a href=\"https://github.com/admirerr/DSA-Collection/graphs/contributors\">";
-          } > contributors.html
+        curl -s "[https://api.github.com/repos/${{](https://api.github.com/repos/${{) github.repository }}/contributors?per_page=100" | \
+        jq -r '.[] | select(.type != "Bot") | @base64 "\(.login), \(.avatar_url), \(.contributions)"' | \
+        while read -r c; do
+          if [ -z "$c" ]; then
+            continue
+          fi
+          DECODED=$(echo "$c" | base64 -d)
+          IFS=',' read -r login avatar_url contributions <<< "$DECODED"
+          echo "    <img src=\"${avatar_url}&s=50\" width=\"50\" height=\"50\" alt=\"$\{login}\"/>" >> contributors.html
+        done
 
-          # Existing contributors from contributors.html
-          existing_contributors=$(cat contributors.html | sed -n '/<img src=/p')
+        {
+          echo "  </a>";
+          echo "</div>";
+        } >> contributors.html
 
-          # Merged pull request contributors
-          echo "${{ steps.get_prs.outputs.prs }}" | \
-          jq -r '.[] | select(.user.login != null and .additions.contributors[].user.login != null) | "\(.user.login), \(.user.avatar_url), \(.additions.contributors[].user.login)"' | \
-          while read -r c; do
-            if [ -z "$c" ]; then
-              continue
-            fi
-            IFS=',' read -r login avatar_url contributions <<< "$c"
-            if [[ ! $existing_contributors =~ $login ]]; then
-              echo "    <img src=\"${avatar_url}&s=50\" width=\"50\" height=\"50\" alt=\"$\{login}\"/>" >> contributors.html
-            fi
-          done
+        python << EOF
+        import re
 
-          {
-            echo "  </a>";
-            echo "</div>";
-          } >> contributors.html
+        with open('README.md', 'r+') as f:
+            text = f.read()
+            with open('contributors.html', 'r') as c:
+                contributors_html = c.read()
+            
+            # Replace everything between the tags
+            new_text = re.sub(r'(<!-- CONTRIBUTORS_LIST -->)(.|\n)*(<!-- CONTRIBUTORS_LIST_END -->)',
+                              f'\1\n{contributors_html}\n\3',
+                              text)
+            
+            f.seek(0)
+            f.write(new_text)
+            f.truncate()
+        EOF
 
-          python << EOF
-          import re
+    - name: 💾 Commit and push changes
+      if: steps.changes.outputs.has_changes == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
 
-          with open('README.md', 'r+') as f:
-              text = f.read()
-              with open('contributors.html', 'r') as c:
-                  contributors_html = c.read()
+        git add README.md HALL_OF_FAME.md
 
-              # Replace everything between the tags
-              new_text = re.sub(r'(<!-- CONTRIBUTORS_LIST -->)(.|\n)*(<!-- CONTRIBUTORS_LIST_END -->)',
-                                f'\1\n{contributors_html}\n\3',
-                                text)
+        git commit -m "🏆 Auto-update contributor statistics"
 
-              f.seek(0)
-              f.write(new_text)
-              f.truncate()
-          EOF
+        git push
 
-      - name: Commit and Push Changes
-        run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
-          git add contributors.html README.md
-          git commit -m "Update contributors in README"
-          git push
+    - name: 📋 Generate summary
+      run: |
+        echo "🏆 Contributors Update Summary"
+        echo "=============================="
+        echo ""
+        echo "📊 Statistics:"
+        echo "  👥 Total Contributors: ${{ steps.contributors.outputs.total_contributors }}"
+        echo "  🔥 Repository Status: Active"
+        echo "  📅 Last Updated: $(date)"
+        echo ""
+        echo "🎉 Contributor statistics updated successfully!"
+
+        if [ "${{ steps.changes.outputs.has_changes }}" == "true" ]; then
+          echo "✅ Changes committed and pushed"
+        else
+          echo "ℹ️ No changes needed"
+        fi
+
