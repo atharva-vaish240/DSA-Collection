@@ -49,11 +49,18 @@ jobs:
           filename=$(basename "$file")
           dir=$(dirname "$file")
 
-          # Check directory structure - must be in a Language/Topic structure
+          # Check directory structure and file naming conventions
           if [[ "$file" =~ \.(c|cpp|java|py|js|ts|go|rs|kt|swift|php|rb|cs|dart|scala)$ ]]; then
             # Path should be like Language/Topic/file.ext, so dirname should have one '/'
             if [[ ! "$dir" =~ / ]] || [[ "$dir" =~ /.+/ ]]; then
               invalid_files+=("$file: Should be in a Language/Topic/ subdirectory (e.g., CPP/graphs/my_algo.cpp)")
+            fi
+            
+            # Special check for Java files - must use PascalCase
+            if [[ "$file" =~ \.java$ ]]; then
+              if [[ ! "$filename" =~ ^[A-Z][a-zA-Z0-9]*\.java$ ]]; then
+                invalid_files+=("$file: Java files must use PascalCase naming (e.g., BinarySearch.java, MergeSort.java)")
+              fi
             fi
           fi
         done
