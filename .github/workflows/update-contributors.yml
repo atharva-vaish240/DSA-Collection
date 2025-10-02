@@ -1,10 +1,12 @@
 name: 🏆 Update Contributors
 
 on:
+  push:
+    branches: [main]
   pull_request:
     types: [closed]
     branches: [main]
-  workflow_dispatch:
+  workflow_dispatch: # Allow manual trigger
 
 permissions:
   contents: write
@@ -13,11 +15,86 @@ permissions:
 jobs:
   update-contributors:
     runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
+
     steps:
-    - name: 📥 Checkout code
+    - name: 📥 Checkout Code
       uses: actions/checkout@v4
       with:
-        ref: main
+        token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
-    - name: Run test
-      run: echo "The update-contributors job is running!"
+
+    - name: 🧑‍💻 Identify Contributor
+      id: get_contributor
+      run: |
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          echo "contributor=${{ github.event.pull_request.user.login }}" >> $GITHUB_OUTPUT
+        else
+          echo "contributor=${{ github.actor }}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: 🤝 Fetch Contributor Details
+      id: contributor_details
+      run: |
+        USER_INFO=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/users/${{ steps.get_contributor.outputs.contributor }}")
+        echo "avatar_url=$(echo "$USER_INFO" | jq -r '.avatar_url')" >> $GITHUB_OUTPUT
+
+    - name: ✨ Update Contributor Profile
+      run: |
+        CONTRIBUTOR="${{ steps.get_contributor.outputs.contributor }}"
+        AVATAR_URL="${{ steps.contributor_details.outputs.avatar_url }}"
+        CONTRIBUTOR_LINE="<a href='https://github.com/$CONTRIBUTOR'><img src='$AVATAR_URL' width='50px' alt='$CONTRIBUTOR'/></a>"
+
+        # Update Hall of Fame
+        if ! grep -i -q "$CONTRIBUTOR" HALL_OF_FAME.md; then
+          sed -i "/<!-- This section is automatically updated by our GitHub Actions workflow -->/a $CONTRIBUTOR_LINE" HALL_OF_FAME.md
+        fi
+
+        # Update README
+        if ! grep -q "## ✨ Our Amazing Contributors" README.md; then
+          echo -e "\n## ✨ Our Amazing Contributors\n\n<!-- This section is automatically updated by our GitHub Actions workflow -->\n" >> README.md
+        fi
+        if ! grep -i -q "$CONTRIBUTOR" README.md; then
+          echo "Updating README.md for contributor: $CONTRIBUTOR"
+          sed -i "/<!-- This section is automatically updated by our GitHub Actions workflow -->/a $CONTRIBUTOR_LINE" README.md
+        fi
+
+    - name: 📊 Fetch Repository Statistics
+      id: repo_stats
+      run: |
+        CONTRIBUTORS_COUNT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100" | \
+          jq -r '[.[] | select(.type != "Bot")] | length')
+        echo "contributors_count=$CONTRIBUTORS_COUNT" >> $GITHUB_OUTPUT
+
+        CPP_FILES=$(find CPP -name '*.cpp' | wc -l)
+        JAVA_FILES=$(find Java -name '*.java' | wc -l)
+        PYTHON_FILES=$(find Python -name '*.py' | wc -l)
+        TOTAL_FILES=$((CPP_FILES + JAVA_FILES + PYTHON_FILES))
+        echo "total_implementations=$TOTAL_FILES" >> $GITHUB_OUTPUT
+        echo "cpp_implementations=$CPP_FILES" >> $GITHUB_OUTPUT
+        echo "java_implementations=$JAVA_FILES" >> $GITHUB_OUTPUT
+        echo "python_implementations=$PYTHON_FILES" >> $GITHUB_OUTPUT
+
+    - name: 📈 Update Hall of Fame Statistics
+      run: |
+        sed -i "s/| 🎯 **Total Implementations** | [0-9]* |/| 🎯 **Total Implementations** | ${{ steps.repo_stats.outputs.total_implementations }} |/g" HALL_OF_FAME.md
+        sed -i "s/### Python\n- Implementations: [0-9]*/### Python\n- Implementations: ${{ steps.repo_stats.outputs.python_implementations }}/g" HALL_OF_FAME.md
+        sed -i "s/### C\+\+\n- Implementations: [0-9]*/### C++\n- Implementations: ${{ steps.repo_stats.outputs.cpp_implementations }}/g" HALL_OF_FAME.md
+        sed -i "s/### Java\n- Implementations: [0-9]*/### Java\n- Implementations: ${{ steps.repo_stats.outputs.java_implementations }}/g" HALL_OF_FAME.md
+
+    - name: 📅 Update Last Modified Date
+      run: |
+        current_date=$(date +"%B %Y")
+        sed -i "s/\*Last updated: .* [0-9]*\*/\*Last updated: $current_date\*/g" HALL_OF_FAME.md
+
+    - name: 💾 Commit and Push Changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add README.md HALL_OF_FAME.md
+        if ! git diff --staged --quiet; then
+          git commit -m "🏆 Chore: Update contributor statistics and profiles"
+          git push
+        fi
