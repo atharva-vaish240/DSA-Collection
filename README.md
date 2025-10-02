@@ -135,7 +135,6 @@ And we're excited to accept solutions in:
 
 ---
 
-
 ## ⭐ Support
 
 If you find this project useful, consider **starring the repo** to help others discover it.
