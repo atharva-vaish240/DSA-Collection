@@ -7,9 +7,8 @@ def jump_search(arr, x):
 
     # Jump ahead in blocks
     while arr[min(step, n)-1] < target:
-
-    step = int(math.sqrt(n))
-    prev = 0
+        step = int(math.sqrt(n))
+        prev = 0
 
     while arr[min(step, n) - 1] < target:
 main
