@@ -1,4 +1,4 @@
-public class floyd_warshall {
+public class FloydWarshall {
     final static int INF = 99999;
     
     public static void floydWarshall(int[][] graph, int V) {
