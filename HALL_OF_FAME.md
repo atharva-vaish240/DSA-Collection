@@ -1,14 +1,14 @@
 # 🏆 DSA Collection Hall of Fame
 
-**Total 2025 Contributors: 0+ Amazing Developers!**
+**Total 2025 Contributors: 1+ Amazing Developers!**
 
-We extend our heartfelt gratitude to all **0+ contributors** who have contributed to this repository during Hacktoberfest 2025! Your dedication to sharing knowledge and improving the coding community is truly inspiring.
+We extend our heartfelt gratitude to all **1+ contributors** who have contributed to this repository during Hacktoberfest 2025! Your dedication to sharing knowledge and improving the coding community is truly inspiring.
 
 ## 📊 Repository Statistics
 
 | Category | Count |
 |----------|-------|
-| 👥 **Total Contributors** | 0+ Amazing Developers |
+| 👥 **Total Contributors** | 1+ Amazing Developers |
 | 💻 **Languages** | Python, C++, Java |
 | 📁 **Categories** | Searching, Sorting, Graph Algorithms, String Algorithms |
 | 🎯 **Total Implementations** | 0 |
