@@ -1,6 +1,9 @@
 name: 🏆 Update Contributors
 
 on:
+  push:
+    branches: 
+      - main
   pull_request:
     types: [closed]
     branches: [main]
@@ -13,8 +16,11 @@ permissions:
 jobs:
   update-contributors:
     runs-on: ubuntu-latest
-    # Only run when PR is merged to main
-    if: github.event.pull_request.merged == true
+    # Run on push to main, manual trigger, or when PR is merged
+    if: |
+      github.event_name == 'push' || 
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
 
     steps:
     - name: 📥 Checkout code
