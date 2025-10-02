@@ -80,6 +80,13 @@ If you're learning DSA or want to practice contributing to open source, this rep
 
 ---
 
+## 📊 Repository Stats
+
+- 💻 **3+ Languages**
+- ✨ **0+ Total Implementations**
+
+---
+
 ## 📌 Supported Languages
 
 We welcome contributions in any programming language! Currently implemented solutions in:

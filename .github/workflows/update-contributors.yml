@@ -117,7 +117,8 @@ jobs:
 
         # Update README stats
         if [ -f "README.md" ]; then
-          sed -i "s/💻 \*\*[0-9]*+ Languages\*\*/💻 **${supported_languages}+ Languages**/g" README.md
+          sed -i -e "s/💻 \*\*[0-9]*+ Languages\*\*/💻 **${supported_languages}+ Languages**/g" \
+                   -e "s/✨ \*\*[0-9]*+ Total Implementations\*\*/✨ **${total_implementations}+ Total Implementations**/g" README.md
         fi
 
     - name: 📅 Update last modified date
