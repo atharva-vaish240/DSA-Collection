@@ -4,7 +4,7 @@
 // Description: This program rotates an array to the left or right based on user input.
 
 import java.util.Scanner;
-import java.util.Scanner;
+import java.util.Arrays; // <-- Add this import
 
 public class RotateArray {
 
