@@ -1,6 +1,44 @@
-# DSA Collection
+# Welcome to the **DSA Code Repository**! 
 
-A community-driven repository of Data Structures and Algorithms solutions in multiple programming languages.
+This is a comprehensive collection of **Data Structures and Algorithms** implementations in multiple programming languages, organized specifically for **Hacktoberfest 2025** contributions.
+
+![Hacktoberfest 2025](./assets/HF2025-EmailHeader.png)
+
+<div align="center">
+
+<img src="https://img.shields.io/badge/hacktoberfest-2025-blueviolet" alt="Hacktober Badge"/>
+<img src="https://img.shields.io/static/v1?label=%F0%9F%8C%9F&message=If%20Useful&style=style=flat&color=BC4E99" alt="Star Badge"/>
+<a href="https://github.com/admirerr" ><img src="https://img.shields.io/badge/Contributions-welcome-violet.svg?style=flat&logo=git" alt="Contributions" /></a>
+<a href="https://github.com/admirerr/DSA-Collection/pulls"><img src="https://img.shields.io/github/issues-pr/admirerr/DSA-Collection" alt="Pull Requests Badge"/></a>
+<a href="https://github.com/admirerr/DSA-Collection/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/admirerr/DSA-Collection?color=2b9348"></a>
+
+</div>
+
+## 🎯 Repository Purpose
+
+This repository serves as:
+- **Learning Resource**: A well-organized collection of algorithms and data structures
+- **First Contribution Hub**: Perfect for newcomers to open source
+- **Reference Library**: Quick access to implementations in multiple languages
+- **Practice Platform**: Solve problems and contribute solutions
+
+🗣 **Hacktoberfest encourages participation in the open-source community, which grows bigger every year. Complete the challenge and get a tree planted on your name showing your love towards mother Earth 🌍**
+
+📢 **Register [here](https://hacktoberfest.com/) for Hacktoberfest and make six pull requests (PRs) between October 1st-31st for exclusive T-shirt + Tree contribution! 🔥🌱**
+
+## 👥 Repository Maintainer
+
+<div align="center">
+
+**🛠️ Admin & Maintainer**
+
+[![GitHub](https://img.shields.io/badge/GitHub-@admirerr-181717?style=for-the-badge&logo=github)](https://github.com/admirerr/)
+
+*Feel free to reach out for any questions, contributions, or support!*
+
+</div>
+
+
 
 ## 📂 Repository Structure
 
@@ -97,3 +135,12 @@ If you find this project useful, consider **starring the repo** to help others d
 
 [🏆 Hall of Fame](./HALL_OF_FAME.md)
 
+## 🌟 Our Amazing Contributors
+
+<div align="center">
+<a href="https://github.com/admirerr/DSA-Collection/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=admirerr/DSA-Collection" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks)
+</div>
