@@ -26,6 +26,8 @@ jobs:
 
     - name: 🏆 Update contributors list
       run: |
+        echo "🔍 Fetching contributors from GitHub API..."
+        
         # Fetch contributors and create HTML
         curl -s "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100" | \
         jq -r '.[] | select(.type != "Bot") | "<img src=\"\(.avatar_url)&s=50\" width=\"50\" height=\"50\" alt=\"\(.login)\" />"' | \
@@ -37,27 +39,90 @@ jobs:
           echo "</div>"
         } > contributors.html
 
-        # Update README.md
-        python << 'EOF'
-        import re
+        echo "📄 Contributors HTML generated:"
+        cat contributors.html
+        echo ""
 
-        with open('README.md', 'r') as f:
-            text = f.read()
+        # Verify README.md exists
+        if [ ! -f "README.md" ]; then
+          echo "❌ ERROR: README.md not found!"
+          exit 1
+        fi
+
+        echo "✅ README.md found"
+        echo "📝 Checking for contributor tags..."
         
-        with open('contributors.html', 'r') as c:
-            contributors_html = c.read()
+        # Check if tags exist
+        if ! grep -q "<!-- CONTRIBUTORS_LIST -->" README.md; then
+          echo "❌ ERROR: <!-- CONTRIBUTORS_LIST --> tag not found in README.md"
+          exit 1
+        fi
         
-        # Replace everything between the tags
-        new_text = re.sub(
-            r'(<!-- CONTRIBUTORS_LIST -->).*?(<!-- CONTRIBUTORS_LIST_END -->)',
-            f'\\1\n{contributors_html}\n\\2',
-            text,
-            flags=re.DOTALL
-        )
+        if ! grep -q "<!-- CONTRIBUTORS_LIST_END -->" README.md; then
+          echo "❌ ERROR: <!-- CONTRIBUTORS_LIST_END --> tag not found in README.md"
+          exit 1
+        fi
         
-        with open('README.md', 'w') as f:
-            f.write(new_text)
+        echo "✅ Both tags found in README.md"
+        echo "🔄 Updating README.md with contributors..."
+
+        # Update README.md with better error handling
+        python3 << 'EOF'
+        import re
+        import sys
+
+        try:
+            # Read README
+            print("📖 Reading README.md...")
+            with open('README.md', 'r', encoding='utf-8') as f:
+                text = f.read()
+            print(f"✅ README.md read successfully ({len(text)} characters)")
+            
+            # Read contributors HTML
+            print("📖 Reading contributors.html...")
+            with open('contributors.html', 'r', encoding='utf-8') as c:
+                contributors_html = c.read().strip()
+            print(f"✅ Contributors HTML read successfully ({len(contributors_html)} characters)")
+            
+            # Check if tags exist
+            if '<!-- CONTRIBUTORS_LIST -->' not in text:
+                print("❌ ERROR: Start tag not found in README.md")
+                sys.exit(1)
+            
+            if '<!-- CONTRIBUTORS_LIST_END -->' not in text:
+                print("❌ ERROR: End tag not found in README.md")
+                sys.exit(1)
+            
+            # Replace everything between the tags
+            print("🔄 Replacing content between tags...")
+            new_text = re.sub(
+                r'<!-- CONTRIBUTORS_LIST -->.*?<!-- CONTRIBUTORS_LIST_END -->',
+                f'<!-- CONTRIBUTORS_LIST -->\n{contributors_html}\n<!-- CONTRIBUTORS_LIST_END -->',
+                text,
+                flags=re.DOTALL
+            )
+            
+            # Verify replacement occurred
+            if new_text == text:
+                print("⚠️  WARNING: No changes detected after replacement")
+            else:
+                print(f"✅ Content replaced successfully")
+            
+            # Write back to README
+            print("💾 Writing updated README.md...")
+            with open('README.md', 'w', encoding='utf-8') as f:
+                f.write(new_text)
+            print("✅ README.md updated successfully!")
+            
+        except Exception as e:
+            print(f"❌ ERROR: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            sys.exit(1)
         EOF
+
+        echo ""
+        echo "✅ Contributors list update completed!"
 
     - name: 📈 Update language statistics
       run: |
@@ -99,14 +164,26 @@ jobs:
     - name: 🔍 Check for changes
       id: changes
       run: |
-        if git diff --quiet; then
-          echo "No changes to commit"
-          echo "has_changes=false" >> $GITHUB_OUTPUT
-        else
-          echo "Changes detected"
-          echo "has_changes=true" >> $GITHUB_OUTPUT
-          echo "Changed files:"
+        echo "🔍 Checking for changes in tracked files..."
+        echo ""
+        
+        # Show git status
+        echo "📊 Git Status:"
+        git status --short
+        echo ""
+        
+        # Show detailed diff
+        if ! git diff --quiet; then
+          echo "📝 Changes detected in:"
           git diff --name-only
+          echo ""
+          echo "📋 Detailed changes:"
+          git diff --stat
+          echo ""
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+        else
+          echo "ℹ️  No changes to commit"
+          echo "has_changes=false" >> $GITHUB_OUTPUT
         fi
 
     - name: 💾 Create and Merge Pull Request
