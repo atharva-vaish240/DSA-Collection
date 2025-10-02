@@ -21,7 +21,6 @@ jobs:
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
 
     - name: 🧑‍💻 Identify Contributor
@@ -33,17 +32,10 @@ jobs:
           echo "contributor=${{ github.actor }}" >> $GITHUB_OUTPUT
         fi
 
-    - name: 🤝 Fetch Contributor Details
-      id: contributor_details
-      run: |
-        USER_INFO=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/users/${{ steps.get_contributor.outputs.contributor }}")
-        echo "avatar_url=$(echo "$USER_INFO" | jq -r '.avatar_url')" >> $GITHUB_OUTPUT
-
     - name: ✨ Update Contributor Profile
       run: |
         CONTRIBUTOR="${{ steps.get_contributor.outputs.contributor }}"
-        AVATAR_URL="${{ steps.contributor_details.outputs.avatar_url }}"
+        AVATAR_URL="https://github.com/$CONTRIBUTOR.png"
         CONTRIBUTOR_LINE="<a href='https://github.com/$CONTRIBUTOR'><img src='$AVATAR_URL' width='50px' alt='$CONTRIBUTOR'/></a>"
 
         # Update Hall of Fame
@@ -63,11 +55,6 @@ jobs:
     - name: 📊 Fetch Repository Statistics
       id: repo_stats
       run: |
-        CONTRIBUTORS_COUNT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100" | \
-          jq -r '[.[] | select(.type != "Bot")] | length')
-        echo "contributors_count=$CONTRIBUTORS_COUNT" >> $GITHUB_OUTPUT
-
         CPP_FILES=$(find CPP -name '*.cpp' | wc -l)
         JAVA_FILES=$(find Java -name '*.java' | wc -l)
         PYTHON_FILES=$(find Python -name '*.py' | wc -l)
@@ -79,10 +66,13 @@ jobs:
 
     - name: 📈 Update Hall of Fame Statistics
       run: |
+        # Update total implementations
         sed -i "s#| 🎯 **Total Implementations** | [0-9]* |#| 🎯 **Total Implementations** | ${{ steps.repo_stats.outputs.total_implementations }} |#g" HALL_OF_FAME.md
-        sed -i "s#### Python\n- Implementations: [0-9]*#### Python\n- Implementations: ${{ steps.repo_stats.outputs.python_implementations }}#g" HALL_OF_FAME.md
-        sed -i "s#### C\+\+\n- Implementations: [0-9]*#### C++\n- Implementations: ${{ steps.repo_stats.outputs.cpp_implementations }}#g" HALL_OF_FAME.md
-        sed -i "s#### Java\n- Implementations: [0-9]*#### Java\n- Implementations: ${{ steps.repo_stats.outputs.java_implementations }}#g" HALL_OF_FAME.md
+
+        # Update per-language implementations
+        sed -i "0,/- Implementations: [0-9]*/s//- Implementations: ${{ steps.repo_stats.outputs.python_implementations }}/" HALL_OF_FAME.md
+        sed -i "0,/- Implementations: [0-9]*/s//- Implementations: ${{ steps.repo_stats.outputs.cpp_implementations }}/" HALL_OF_FAME.md
+        sed -i "0,/- Implementations: [0-9]*/s//- Implementations: ${{ steps.repo_stats.outputs.java_implementations }}/" HALL_OF_FAME.md
 
     - name: 📅 Update Last Modified Date
       run: |
