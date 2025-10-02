@@ -80,12 +80,6 @@ If you're learning DSA or want to practice contributing to open source, this rep
 
 ---
 
-## ✨ Our Amazing Contributors
-
-<!-- This section is automatically updated by our GitHub Actions workflow -->
-
----
-
 ## 📌 Supported Languages
 
 We welcome contributions in any programming language! Currently implemented solutions in:
@@ -133,6 +127,7 @@ And we're excited to accept solutions in:
 - New solutions for different languages are welcome
 
 ---
+
 
 ## ⭐ Support
 
