@@ -28,21 +28,26 @@ jobs:
     - name: 🏆 Update contributors list
       run: |
         set -x
-        CONTRIBUTORS=$(curl -s "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100" | jq -r '.[] | select(.type != "Bot") | @base64 "\(.login), \(.avatar_url), \(.contributions)"')
-        
         {
           echo "<div align=\"center\">";
           echo "  <a href=\"https://github.com/admirerr/DSA-Collection/graphs/contributors\">";
-          
-          for c in $CONTRIBUTORS; do
-            DECODED=$(echo "$c" | base64 -d)
-            IFS=',' read -r login avatar_url contributions <<< "$DECODED"
-            echo "    <img src=\"${avatar_url}&s=50\" width=\"50\" height=\"50\" alt=\" ${login}\" />";
-          done
-          
+        } > contributors.html
+
+        curl -s "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100" | \
+        jq -r '.[] | select(.type != "Bot") | @base64 "\(.login), \(.avatar_url), \(.contributions)"' | \
+        while read -r c; do
+          if [ -z "$c" ]; then
+            continue
+          fi
+          DECODED=$(echo "$c" | base64 -d)
+          IFS=',' read -r login avatar_url contributions <<< "$DECODED"
+          echo "    <img src=\"${avatar_url}&s=50\" width=\"50\" height=\"50\" alt=\"${login}\"/>" >> contributors.html
+        done
+
+        {
           echo "  </a>";
           echo "</div>";
-        } > contributors.html
+        } >> contributors.html
 
         python << EOF
         import re
@@ -64,7 +69,7 @@ jobs:
 
     - name: 📈 Update language statistics
       run: |
-        echo "📈 Updating language statistics...";
+        echo "📈 Updating language statistics..."
 
         # Count files by language
         cpp_files=$(find CPP/ -name "*.cpp" 2>/dev/null | wc -l || echo 0)
@@ -73,16 +78,16 @@ jobs:
 
         total_implementations=$((cpp_files + java_files + python_files))
 
-        echo "📊 Language Statistics:";
-        echo "C++: $cpp_files files";
-        echo "Java: $java_files files";
-        echo "Python: $python_files files";
-        echo "Total: $total_implementations implementations";
+        echo "📊 Language Statistics:"
+        echo "C++: $cpp_files files"
+        echo "Java: $java_files files"
+        echo "Python: $python_files files"
+        echo "Total: $total_implementations implementations"
 
         # Count supported languages
         supported_languages=3 # Base languages: C++, Java, Python
 
-        echo "Supported languages: $supported_languages";
+        echo "Supported languages: $supported_languages"
 
         # Update README stats
         if [ -f "README.md" ]; then
@@ -91,53 +96,53 @@ jobs:
 
     - name: 📅 Update last modified date
       run: |
-        echo "📅 Updating last modified date...";
+        echo "📅 Updating last modified date..."
         current_date=$(date +"%B %Y")
 
         if [ -f "HALL_OF_FAME.md" ]; then
           sed -i "s/\*Last updated: .* [0-9]*\*/\*Last updated: $current_date\*/g" HALL_OF_FAME.md
-          echo "✅ Updated last modified date in HALL_OF_FAME.md";
+          echo "✅ Updated last modified date in HALL_OF_FAME.md"
         fi
 
     - name: 🔍 Check for changes
       id: changes
       run: |
         if git diff --quiet; then
-          echo "No changes to commit";
-          echo "has_changes=false" >> $GITHUB_OUTPUT;
+          echo "No changes to commit"
+          echo "has_changes=false" >> $GITHUB_OUTPUT
         else
-          echo "Changes detected";
-          echo "has_changes=true" >> $GITHUB_OUTPUT;
-          echo "Changed files:";
-          git diff --name-only;
+          echo "Changes detected"
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "Changed files:"
+          git diff --name-only
         fi
 
     - name: 💾 Commit and push changes
       if: steps.changes.outputs.has_changes == 'true'
       run: |
-        git config --local user.email "action@github.com";
-        git config --local user.name "GitHub Action";
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
 
-        git add README.md HALL_OF_FAME.md;
+        git add README.md HALL_OF_FAME.md
 
-        git commit -m "🏆 Auto-update contributor statistics";
+        git commit -m "🏆 Auto-update contributor statistics"
 
-        git push;
+        git push
 
     - name: 📋 Generate summary
       run: |
-        echo "🏆 Contributors Update Summary";
-        echo "==============================";
-        echo "";
-        echo "📊 Statistics:";
-        echo "  👥 Total Contributors: ${{ steps.contributors.outputs.total_contributors }}";
-        echo "  🔥 Repository Status: Active";
-        echo "  📅 Last Updated: $(date)";
-        echo "";
-        echo "🎉 Contributor statistics updated successfully!";
+        echo "🏆 Contributors Update Summary"
+        echo "=============================="
+        echo ""
+        echo "📊 Statistics:"
+        echo "  👥 Total Contributors: ${{ steps.contributors.outputs.total_contributors }}"
+        echo "  🔥 Repository Status: Active"
+        echo "  📅 Last Updated: $(date)"
+        echo ""
+        echo "🎉 Contributor statistics updated successfully!"
 
         if [ "${{ steps.changes.outputs.has_changes }}" == "true" ]; then
-          echo "✅ Changes committed and pushed";
+          echo "✅ Changes committed and pushed"
         else
-          echo "ℹ️ No changes needed";
+          echo "ℹ️ No changes needed"
         fi
