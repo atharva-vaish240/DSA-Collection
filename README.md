@@ -2,8 +2,6 @@
 
 A community-driven repository of Data Structures and Algorithms solutions in multiple programming languages.
 
-[![Hall of Fame](https://img.shields.io/badge/🏆_Hall_of_Fame-View_Contributors-gold?style=for-the-badge)](https://admirerr.github.io/DSA-Collection/hall-of-fame)
-
 ## 📂 Repository Structure
 
 The repository follows a simple two-level structure:
@@ -97,7 +95,5 @@ If you find this project useful, consider **starring the repo** to help others d
 
 ## 📌 Useful Links
 
-[📊 Repository Statistics](https://admirerr.github.io/DSA-Collection)
-[🏆 Hall of Fame](https://admirerr.github.io/DSA-Collection/hall-of-fame)
-[📝 Contributing Guidelines](./CONTRIBUTING.md)
+[🏆 Hall of Fame](./HALL_OF_FAME.md)
 
