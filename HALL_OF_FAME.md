@@ -49,7 +49,7 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 - Implementations: 26
 
 ### C++
-- Implementations: 64
+- Implementations: 65
 
 ### Java
 - Implementations: 22
