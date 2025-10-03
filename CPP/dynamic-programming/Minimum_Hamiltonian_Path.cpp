@@ -9,42 +9,42 @@ int main() {
     
     int n,m;
     if(!(cin>>n>>m)) return 0;
-    vector<vector<ll>> w(n,vector<ll>(n,INF));
+    vector<vector<ll>> adj(n,vector<ll>(n,INF));
     for(int i=0;i<m;++i) {
         int u,v;
         ll wt;
         cin>>u>>v>>wt;
         --u;--v;
-        w[u][v]=min(w[u][v],wt);
+        adj[u][v]=min(adj[u][v],wt);
     }
     
     int ALL=1<<n;
     vector<vector<ll>> dp(ALL,vector<ll>(n,INF));
     
-    for(int v=0;v<n;++v)dp[1<<v][v]=0;
+    for(int v=0;v<n;++v) dp[1<<v][v]=0;
     
-    for(int w=1;w<ALL;++w) {
+    for(int mask=1;mask<ALL;++mask) {
         for(int x=0;x<n;++x) {
-            if(!(w&(1<<x)))continue;
-            ll cur=dp[w][x];
-            if(cur==INF)continue;
-            int z=(~w)&(ALL-1);
+            if(!(mask&(1<<x))) continue;
+            ll cur=dp[mask][x];
+            if(cur==INF) continue;
+            int z=(~mask)&(ALL-1);
             for(int y=0;y<n;++y) {
-                if(!(z&(1<<y)))continue;
-                if(w[x][y]==INF)continue;
-                int nw=w|(1<<y);
-                ll cand=cur+w[x][y];
-                if(cand<dp[nw][y])dp[nw][y]=cand;
+                if(!(z&(1<<y))) continue;
+                if(adj[x][y]==INF) continue;
+                int nmask=mask|(1<<y);
+                ll cand=cur+adj[x][y];
+                if(cand<dp[nmask][y]) dp[nmask][y]=cand;
             }
         }
     }
     
     ll ans=INF;
-    int finalw=ALL-1;
+    int finalMask=ALL-1;
     for(int v=0;v<n;++v) {
-        ans=min(ans,dp[finalw][v]);
+        ans=min(ans,dp[finalMask][v]);
     }
-    if(ans>=INF/2)cout<<-1<<'\n';
+    if(ans>=INF/2) cout<<-1<<'\n';
     else cout<<ans<<'\n';
     
     return 0;
