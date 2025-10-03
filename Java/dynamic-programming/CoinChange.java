@@ -3,7 +3,7 @@
 
 import java.util.*;
 
-public class coin_change {
+public class CoinChange {
 
     public static int coinChange(int[] coins, int amount) {
         int[] dp = new int[amount + 1];
