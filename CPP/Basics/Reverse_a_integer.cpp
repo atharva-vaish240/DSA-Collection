@@ -7,8 +7,9 @@ int main()
 {
  int num;
  long long int rev_num;
- // num variable stores the number given by the user
- // rev_num variable stores the reversed number
+
+  // num variable stores the number given by the user
+  // rev_num variable stores the reversed number
 cout<<"Enter a number to reverse: ";
 cin>>num;
 
@@ -20,7 +21,7 @@ if(num==0){
 
 rev_num=0;
 
-// loop to reverse the number
+  // loop to reverse the number
 while(num>0)
 {
  // extracts the last digit of the number
