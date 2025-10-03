@@ -63,10 +63,20 @@ jobs:
 
       - name: Update Implementation Counts
         run: |
-          sed -i 's/| 🎯 \*\*Total Implementations\*\* | [0-9]\+ |/| 🎯 **Total Implementations** | 22 |/' HALL_OF_FAME.md
-          sed -i '/### Python/{n;s/- Implementations: [0-9]\+/- Implementations: 6/}' HALL_OF_FAME.md
-          sed -i '/### C++/{n;s/- Implementations: [0-9]\+/- Implementations: 4/}' HALL_OF_FAME.md
-          sed -i '/### Java/{n;s/- Implementations: [0-9]\+/- Implementations: 12/}' HALL_OF_FAME.md
+          # Count implementations dynamically
+          PY_COUNT=$(find . -type f -name "*.py" | wc -l)
+          CPP_COUNT=$(find . -type f -name "*.cpp" | wc -l)
+          JAVA_COUNT=$(find . -type f -name "*.java" | wc -l)
+          
+          # Total implementations
+          TOTAL_COUNT=$((PY_COUNT + CPP_COUNT + JAVA_COUNT))
+          
+          # Update counts in HALL_OF_FAME.md
+          sed -i "s/| 🎯 \*\*Total Implementations\*\* | [0-9]\+ |/| 🎯 **Total Implementations** | $TOTAL_COUNT |/" HALL_OF_FAME.md
+          sed -i "/### Python/{n;s/- Implementations: [0-9]\+/- Implementations: $PY_COUNT/}" HALL_OF_FAME.md
+          sed -i "/### C++/{n;s/- Implementations: [0-9]\+/- Implementations: $CPP_COUNT/}" HALL_OF_FAME.md
+          sed -i "/### Java/{n;s/- Implementations: [0-9]\+/- Implementations: $JAVA_COUNT/}" HALL_OF_FAME.md
+
 
       - name: Commit changes
         run: |
