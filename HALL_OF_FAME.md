@@ -56,7 +56,7 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 - Implementations: 29
 
 ### C++
-- Implementations: 80
+- Implementations: 81
 
 ### Java
 - Implementations: 28
