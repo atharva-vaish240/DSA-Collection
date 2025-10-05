@@ -15,6 +15,20 @@ struct Node
  }
 };
 
+//build binary tree from user input
+// Input format: Enter node values in pre-order fashion. Use -1 to indicate NULL nodes
+Node *buildTree()
+{
+ int val;
+ cin >> val;
+ if (val == -1)
+  return NULL;
+ Node *root = new Node(val);
+ root->left = buildTree();
+ root->right = buildTree();
+ return root;
+}
+
 Node *flatten(Node *root)  // flatten the binary tree to a linked list in-place time: O(n) space: O(1)
 {
  if (!root)
@@ -51,12 +65,7 @@ void inorder(Node *root)  // inorder traversal to display the tree
 int main()
 {
  cout << "Build the binary tree (use -1 for NULL nodes): ";
- Node *root = new Node(1);
- root->left = new Node(2);
- root->right = new Node(5);
- root->left->left = new Node(3);
- root->left->right = new Node(4);
- root->right->right = new Node(6);
+ Node *root = buildTree(); // Example input: 1 2 4 -1 -1 5 -1 -1 3 -1 -1
 
  cout << "Inorder Traversal of original tree: ";
  inorder(root);
