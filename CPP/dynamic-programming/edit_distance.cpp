@@ -1,39 +1,38 @@
-
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <string>
 using namespace std;
 
-const int prime = 1e9 + 7;
-
-// Function to count the number of distinct subsequences of s2 in s1
-int subsequenceCounting(string &s1, string &s2, int n, int m) {
-    // Create an array to store the count of distinct subsequences for each character in s2
-    vector<int> prev(m + 1, 0);
-
-    // Initialize the count for an empty string (base case)
-    prev[0] = 1;
-
-    // Iterate through s1 and s2 to calculate the counts
-    for (int i = 1; i <= n; i++) {
-        for (int j = m; j >= 1; j--) { // Iterate in reverse direction to avoid overwriting values prematurely
-            if (s1[i - 1] == s2[j - 1]) {
-                // If the characters match, we have two options:
-                // 1. Match the current characters and add to the previous count (prev[j-1])
-                // 2. Leave the current character in s1 and match s2 with the previous characters (prev[j])
-                prev[j] = (prev[j - 1] + prev[j]) % prime;
+// Space Optimization version
+class Solution {
+public:
+    int editDistance(string start, string target) {
+        int n = start.size();
+        int m = target.size();
+        vector<int> prev(m + 1, 0), curr(m + 1, 0);
+        for (int j = 0; j <= m; j++) prev[j] = j;
+        for (int i = 1; i <= n; i++) {
+            curr[0] = i;
+            for (int j = 1; j <= m; j++) {
+                if (start[i - 1] == target[j - 1])
+                    curr[j] = prev[j - 1];
+                else
+                    curr[j] = 1 + min(prev[j - 1], min(curr[j - 1], prev[j]));
             }
-            // No need for an else statement since we can simply leave the previous count as is
+            prev = curr;
         }
+        return curr[m];
     }
-
-    // The value at prev[m] contains the count of distinct subsequences
-    return prev[m];
-}
+};
 
 int main() {
-    string s1 = "babgbag";
-    string s2 = "bag";
-
-    // Call the subsequenceCounting function and print the result
-    cout << "The Count of Distinct Subsequences is " << subsequenceCounting(s1, s2, s1.size(), s2.size());
+    string s1, s2;
+    cout << "Enter first string: ";
+    cin >> s1;
+    cout << "Enter second string: ";
+    cin >> s2;
+    Solution sol;
+    int result = sol.editDistance(s1, s2);
+    cout << "Edit Distance: " << result << endl;
     return 0;
 }
