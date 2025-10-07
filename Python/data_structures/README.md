@@ -1,3 +1,16 @@
+# Fenwick Tree (Binary Indexed Tree)
+
+This folder contains an implementation of the Fenwick Tree (Binary Indexed Tree)
+for range sum queries and point updates. The implementation is in
+`fenwick_tree.py` and includes a small example and public API:
+
+- FenwickTree(data: List[int])
+- add(index: int, delta: int)
+- prefix_sum(index: int) -> int
+- range_sum(left: int, right: int) -> int
+- update(index: int, value: int)
+
+See `test_fenwick_tree.py` for usage examples used by the test suite.
 # Segment Tree (Python)
 
 This folder contains a Segment Tree implementation used for range queries (sum) and point updates.
