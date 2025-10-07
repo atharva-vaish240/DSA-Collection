@@ -5,7 +5,6 @@ public class KadaneAlgorithm {
         if (nums == null || nums.length == 0) {
             throw new IllegalArgumentException("Array is empty");
         }
-
         // Initialize maxSoFar and maxEndingHere with the first element
         int maxSoFar = nums[0];
         int maxEndingHere = nums[0];
