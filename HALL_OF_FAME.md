@@ -72,7 +72,7 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 - Implementations: 89
 
 ### Java
-- Implementations: 38
+- Implementations: 39
 
 ---
 
