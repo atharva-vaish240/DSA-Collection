@@ -70,7 +70,7 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 - Implementations: 38
 
 ### C++
-- Implementations: 94
+- Implementations: 96
 
 ### Java
 - Implementations: 49
