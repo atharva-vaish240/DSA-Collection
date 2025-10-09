@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""Singly Linked List Implementation"""
-class Node:
-    def __init__(self,data): self.data=data; self.next=None
-class LinkedList:
-    def __init__(self): self.head=None
-    def append(self,data):
-        n=Node(data)
-        if not self.head: self.head=n; return
-        cur=self.head
-        while cur.next: cur=cur.next
-        cur.next=n
-    def display(self):
-        cur=self.head
-        while cur: print(cur.data,end=" -> "); cur=cur.next
-        print("None")
+"""Graph Traversal: BFS and DFS"""
+from collections import deque
+def bfs(graph,start):
+    vis=set([start]); q=deque([start])
+    while q:
+        v=q.popleft(); print(v,end=" ")
+        for n in graph[v]:
+            if n not in vis:
+                vis.add(n); q.append(n)
+def dfs(graph,start,vis=None):
+    if vis is None: vis=set()
+    vis.add(start); print(start,end=" ")
+    for n in graph[start]:
+        if n not in vis: dfs(graph,n,vis)
 if __name__=="__main__":
-    l=LinkedList(); [l.append(i) for i in [1,2,3,4]]; l.display()
+    g={1:[2,3],2:[4],3:[4],4:[]}
+    print("BFS:",end=" "); bfs(g,1); print("\nDFS:",end=" "); dfs(g,1)
