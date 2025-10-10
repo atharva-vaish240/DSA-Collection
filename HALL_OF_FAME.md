@@ -5,7 +5,7 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 | Contributor | Contributions |
 |-------------|---------------|
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="50" height="50"/><br>[admirerr](https://github.com/admirerr)</div> | 255 |
-| <div align="center"><img src="https://avatars.githubusercontent.com/u/65916846?v=4" width="50" height="50"/><br>[actions-user](https://github.com/actions-user)</div> | 118 |
+| <div align="center"><img src="https://avatars.githubusercontent.com/u/65916846?v=4" width="50" height="50"/><br>[actions-user](https://github.com/actions-user)</div> | 119 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/237065123?v=4" width="50" height="50"/><br>[iSoumyaDey](https://github.com/iSoumyaDey)</div> | 27 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/44187117?v=4" width="50" height="50"/><br>[saviour2](https://github.com/saviour2)</div> | 14 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/73050057?v=4" width="50" height="50"/><br>[vipu18](https://github.com/vipu18)</div> | 13 |
@@ -75,7 +75,7 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 - Implementations: 40
 
 ### C++
-- Implementations: 98
+- Implementations: 99
 
 ### Java
 - Implementations: 50
