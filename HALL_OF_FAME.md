@@ -4,8 +4,8 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 
 | Contributor | Contributions |
 |-------------|---------------|
-| <div align="center"><img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="50" height="50"/><br>[admirerr](https://github.com/admirerr)</div> | 254 |
-| <div align="center"><img src="https://avatars.githubusercontent.com/u/65916846?v=4" width="50" height="50"/><br>[actions-user](https://github.com/actions-user)</div> | 117 |
+| <div align="center"><img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="50" height="50"/><br>[admirerr](https://github.com/admirerr)</div> | 255 |
+| <div align="center"><img src="https://avatars.githubusercontent.com/u/65916846?v=4" width="50" height="50"/><br>[actions-user](https://github.com/actions-user)</div> | 118 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/237065123?v=4" width="50" height="50"/><br>[iSoumyaDey](https://github.com/iSoumyaDey)</div> | 27 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/44187117?v=4" width="50" height="50"/><br>[saviour2](https://github.com/saviour2)</div> | 14 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/73050057?v=4" width="50" height="50"/><br>[vipu18](https://github.com/vipu18)</div> | 13 |
@@ -45,6 +45,7 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/110761086?v=4" width="50" height="50"/><br>[DivyanshRajSoni](https://github.com/DivyanshRajSoni)</div> | 1 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/77221000?v=4" width="50" height="50"/><br>[Eternity0207](https://github.com/Eternity0207)</div> | 1 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/54788334?v=4" width="50" height="50"/><br>[Gurdeep99](https://github.com/Gurdeep99)</div> | 1 |
+| <div align="center"><img src="https://avatars.githubusercontent.com/u/182169809?v=4" width="50" height="50"/><br>[KritikaSingh27](https://github.com/KritikaSingh27)</div> | 1 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/113867534?v=4" width="50" height="50"/><br>[Mojirade18](https://github.com/Mojirade18)</div> | 1 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/112306726?v=4" width="50" height="50"/><br>[NoobCoderReturns](https://github.com/NoobCoderReturns)</div> | 1 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/124363247?v=4" width="50" height="50"/><br>[Pritam-night-Owl](https://github.com/Pritam-night-Owl)</div> | 1 |
@@ -77,7 +78,7 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 - Implementations: 98
 
 ### Java
-- Implementations: 49
+- Implementations: 50
 
 ---
 
