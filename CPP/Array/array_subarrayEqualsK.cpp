@@ -25,7 +25,9 @@ public:
 
 int main(){
     Solution s;
-    s.subarraySum({1,2,3,1,2,1},3);
+    
+    vector<int> inp = {1,2,3,1,2,3};
+    cout << s.subarraySum(inp,3);
 
     return 0;
     
