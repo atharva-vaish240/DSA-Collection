@@ -82,6 +82,7 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          git add HALL_OF_FAME.md README.md
+          git add README.md
+          git add HALL_OF_FAME.md
           git commit -m "Update contributors and implementations" || echo "No changes to commit"
           git push
