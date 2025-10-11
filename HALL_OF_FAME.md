@@ -4,7 +4,7 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 
 | Contributor | Contributions |
 |-------------|---------------|
-| <div align="center"><img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="50" height="50"/><br>[admirerr](https://github.com/admirerr)</div> | 260 |
+| <div align="center"><img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="50" height="50"/><br>[admirerr](https://github.com/admirerr)</div> | 259 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/65916846?v=4" width="50" height="50"/><br>[actions-user](https://github.com/actions-user)</div> | 123 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/237065123?v=4" width="50" height="50"/><br>[iSoumyaDey](https://github.com/iSoumyaDey)</div> | 27 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/44187117?v=4" width="50" height="50"/><br>[saviour2](https://github.com/saviour2)</div> | 14 |
@@ -57,7 +57,6 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/41038007?v=4" width="50" height="50"/><br>[djashan](https://github.com/djashan)</div> | 1 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/22633385?v=4" width="50" height="50"/><br>[eltociear](https://github.com/eltociear)</div> | 1 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/96543076?v=4" width="50" height="50"/><br>[hyprex-deva](https://github.com/hyprex-deva)</div> | 1 |
-| <div align="center"><img src="https://avatars.githubusercontent.com/u/175477489?v=4" width="50" height="50"/><br>[kanan010506](https://github.com/kanan010506)</div> | 1 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/188956622?v=4" width="50" height="50"/><br>[krishgarg-code](https://github.com/krishgarg-code)</div> | 1 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/174851110?v=4" width="50" height="50"/><br>[mayank609](https://github.com/mayank609)</div> | 1 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/197562965?v=4" width="50" height="50"/><br>[ramanuj-droid](https://github.com/ramanuj-droid)</div> | 1 |
@@ -76,7 +75,7 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 - Implementations: 40
 
 ### C++
-- Implementations: 102
+- Implementations: 103
 
 ### Java
 - Implementations: 52
