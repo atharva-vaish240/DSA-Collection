@@ -4,8 +4,8 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 
 | Contributor | Contributions |
 |-------------|---------------|
-| <div align="center"><img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="50" height="50"/><br>[admirerr](https://github.com/admirerr)</div> | 259 |
-| <div align="center"><img src="https://avatars.githubusercontent.com/u/65916846?v=4" width="50" height="50"/><br>[actions-user](https://github.com/actions-user)</div> | 123 |
+| <div align="center"><img src="https://avatars.githubusercontent.com/u/79766263?v=4" width="50" height="50"/><br>[admirerr](https://github.com/admirerr)</div> | 262 |
+| <div align="center"><img src="https://avatars.githubusercontent.com/u/65916846?v=4" width="50" height="50"/><br>[actions-user](https://github.com/actions-user)</div> | 126 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/237065123?v=4" width="50" height="50"/><br>[iSoumyaDey](https://github.com/iSoumyaDey)</div> | 27 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/44187117?v=4" width="50" height="50"/><br>[saviour2](https://github.com/saviour2)</div> | 14 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/73050057?v=4" width="50" height="50"/><br>[vipu18](https://github.com/vipu18)</div> | 13 |
@@ -32,6 +32,7 @@ We are incredibly grateful to all our amazing contributors who make this reposit
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/161838111?v=4" width="50" height="50"/><br>[jayalloyd](https://github.com/jayalloyd)</div> | 4 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/230838518?v=4" width="50" height="50"/><br>[Aadya25416](https://github.com/Aadya25416)</div> | 3 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/178640370?v=4" width="50" height="50"/><br>[Pasan11504](https://github.com/Pasan11504)</div> | 3 |
+| <div align="center"><img src="https://avatars.githubusercontent.com/u/175477489?v=4" width="50" height="50"/><br>[kanan010506](https://github.com/kanan010506)</div> | 3 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/97780006?v=4" width="50" height="50"/><br>[Kinshu-Learner](https://github.com/Kinshu-Learner)</div> | 2 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/117072754?v=4" width="50" height="50"/><br>[Noob-coder-007](https://github.com/Noob-coder-007)</div> | 2 |
 | <div align="center"><img src="https://avatars.githubusercontent.com/u/89589561?v=4" width="50" height="50"/><br>[azissukmawan](https://github.com/azissukmawan)</div> | 2 |
